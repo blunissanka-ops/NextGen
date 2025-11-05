@@ -1,198 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RecruIT – NextGen Systems</title>
-
-<!-- Google Font -->
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-
-<style>
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #002855, #0056b3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-  }
-
-  .chat-container {
-    width: 420px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .chat-header {
-    background: linear-gradient(90deg, #0056b3, #00b8d9);
-    color: white;
-    padding: 15px 20px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .chat-header span {
-    font-size: 1.1rem;
-  }
-
-  .status {
-    font-size: 0.8rem;
-    background: #00ff9d;
-    color: #004d40;
-    padding: 3px 8px;
-    border-radius: 10px;
-  }
-
-  #chatbox {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    background: #f9fafc;
-  }
-
-  .message {
-    margin: 10px 0;
-    padding: 12px 16px;
-    border-radius: 18px;
-    max-width: 80%;
-    line-height: 1.4;
-    word-wrap: break-word;
-  }
-
-  .bot-message {
-    background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-  }
-
-  .user-message {
-    background: linear-gradient(135deg, #00b8d9, #0077b6);
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-  }
-
-  .input-area {
-    display: flex;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-    background: #f1f5f9;
-  }
-
-  #userInput {
-    flex: 1;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 15px;
-    outline: none;
-  }
-
-  #sendBtn {
-    background: #0077b6;
-    color: white;
-    border: none;
-    padding: 10px 16px;
-    margin-left: 8px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.3s ease;
-  }
-
-  #sendBtn:hover {
-    background: #0056b3;
-  }
-
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RecruIT – NextGen Systems</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="chat-container">
     <div class="chat-header">
-      <span>🤖 RecruIT – NextGen Systems</span>
-      <span class="status">Online</span>
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" alt="Bot Avatar" class="bot-avatar">
+      <h2>RecruIT – NextGen Systems</h2>
     </div>
-    <div id="chatbox">
-      <div class="message bot-message">Hello! 👋 I’m RecruIT, your virtual assistant. How can I help you today?</div>
+
+    <div class="chat-box" id="chat-box">
+      <!-- Chat messages appear here -->
     </div>
-    <div class="input-area">
-      <input id="userInput" type="text" placeholder="Ask me about careers, hiring, or jobs...">
-      <button id="sendBtn">Send</button>
+
+    <div class="chat-input">
+      <input type="text" id="user-input" placeholder="Ask me about careers, hiring, or jobs..." />
+      <button id="send-btn">Send</button>
     </div>
   </div>
 
-<script>
-const chatbox = document.getElementById('chatbox');
-const userInput = document.getElementById('userInput');
-const sendBtn = document.getElementById('sendBtn');
-
-// --- FAQ Database ---
-const faqs = {
-  "how can i apply": "You can apply directly through our Careers Page by selecting the role you’re interested in and clicking “Apply Now”. Once you submit your CV and details, our recruitment team will review your application and contact you if you are shortlisted.",
-  "apply for more than one": "Absolutely! If you feel you’re suitable for multiple roles, you’re welcome to apply for more than one. Just make sure each application matches your skills and experience.",
-  "documents": "You will need to upload your updated CV. We also encourage you to include a cover letter and links to your portfolio or LinkedIn profile.",
-  "application received": "Once your application is successfully submitted, you will receive an email confirmation from our team.",
-  "no experience": "Yes! We welcome fresh graduates and candidates from different industries. Passion and willingness to learn are what matter most.",
-  "degree required": "A degree is beneficial but not mandatory for all roles. We value practical experience, creativity, and skills.",
-  "basic qualifications": "You should have the educational background and experience listed in the job advertisement. For starter-level roles, a diploma or degree is usually sufficient.",
-  "age limit": "No, there isn’t a strict age requirement. However, senior roles may require 3–5 years of experience.",
-  "meet qualifications": "Check the detailed qualifications listed in each job post and compare them with your background.",
-  "professional qualifications": "Not always! Certifications like CIMA, ACCA, PMP, and HRM Diplomas are an advantage but not a requirement.",
-  "training program": "Yes! Our Learning & Development team provides training programs to help employees grow into their roles.",
-  "application status": "You can check your application status by logging into your candidate profile on our Careers Portal under 'My Applications'.",
-  "feedback after interview": "Feedback is usually given within 7–10 working days after your interview.",
-  "not selected": "Yes, you will be notified via email if you are not selected.",
-  "interview feedback": "You can request feedback by replying to your interview email or contacting HR via the careers portal.",
-  "under review": "‘Under Review’ means your application is still being evaluated. It may take longer during high application volumes.",
-  "update resume": "Yes, you can update your details before the job posting closes.",
-  "apply again": "Of course! You can reapply or apply for other roles that match your skills.",
-  "when interview": "Our HR team reviews applications within 5–7 working days. If shortlisted, you’ll get an email or SMS invitation.",
-  "interview online": "First rounds are usually online (Google Meet or MS Teams). Final rounds are typically in-person at our Colombo office.",
-  "bring to interview": "Bring a printed CV, ID, and relevant certificates. For online interviews, ensure a stable internet connection.",
-  "prepare interview": "Review the job description, learn about our company, and be ready to discuss your experience and skills.",
-  "who conduct interview": "Interviews are conducted by HR and department managers and usually last 30–45 minutes."
-};
-
-// --- Chat Functions ---
-function addMessage(text, sender) {
-  const msg = document.createElement('div');
-  msg.classList.add('message', sender === 'user' ? 'user-message' : 'bot-message');
-  msg.innerText = text;
-  chatbox.appendChild(msg);
-  chatbox.scrollTop = chatbox.scrollHeight;
-}
-
-function getResponse(input) {
-  const userMsg = input.toLowerCase();
-  for (const key in faqs) {
-    if (userMsg.includes(key)) return faqs[key];
-  }
-  return "Sorry, I’m not sure about that. Please visit our Careers Page for more details.";
-}
-
-// --- Event Listeners ---
-sendBtn.addEventListener('click', () => {
-  const text = userInput.value.trim();
-  if (text) {
-    addMessage(text, 'user');
-    userInput.value = '';
-    setTimeout(() => {
-      const response = getResponse(text);
-      addMessage(response, 'bot');
-    }, 500);
-  }
-});
-
-userInput.addEventListener('keypress', e => {
-  if (e.key === 'Enter') sendBtn.click();
-});
-</script>
+  <script src="script.js"></script>
 </body>
 </html>

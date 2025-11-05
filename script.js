@@ -1,6 +1,7 @@
 const chatBox = document.querySelector('.chat-box');
 const userInput = document.querySelector('#user-input');
 const sendBtn = document.querySelector('#send-btn');
+const clearBtn = document.querySelector('#clear-btn'); // New Clear button
 
 let faqsData = [];
 
@@ -27,6 +28,12 @@ userInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') handleUserInput();
 });
 
+// Handle clear chat
+clearBtn.addEventListener('click', () => {
+  chatBox.innerHTML = '';
+});
+
+// Send user message
 function handleUserInput() {
   const userMessage = userInput.value.trim();
   if (!userMessage) return;

@@ -4,17 +4,96 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RecruIT – NextGen Systems</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f4f7fc;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .chat-container {
+      width: 420px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .chat-header {
+      background: #004aad;
+      color: white;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .chat-header img {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+    }
+    .chat-box {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scroll-behavior: smooth;
+    }
+    .message {
+      padding: 10px 15px;
+      border-radius: 15px;
+      max-width: 80%;
+    }
+    .bot {
+      background: #eaf1ff;
+      align-self: flex-start;
+    }
+    .user {
+      background: #004aad;
+      color: white;
+      align-self: flex-end;
+    }
+    .typing {
+      font-style: italic;
+      color: gray;
+      font-size: 0.9em;
+    }
+    .chat-input {
+      display: flex;
+      border-top: 1px solid #ddd;
+    }
+    .chat-input input {
+      flex: 1;
+      border: none;
+      padding: 10px;
+      outline: none;
+      font-size: 1em;
+    }
+    .chat-input button {
+      background: #004aad;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
+
   <div class="chat-container">
     <div class="chat-header">
-      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" alt="Bot Avatar" class="bot-avatar">
-      <h2>RecruIT – NextGen Systems</h2>
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712105.png" alt="Bot Avatar">
+      <h3>RecruIT – NextGen Systems</h3>
     </div>
 
     <div class="chat-box" id="chat-box">
-      <!-- Chat messages appear here -->
+      <div class="message bot">👋 Hello! I’m RecruIT, your virtual assistant. How can I help you today?</div>
     </div>
 
     <div class="chat-input">
@@ -23,6 +102,100 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    const chatBox = document.getElementById("chat-box");
+    const userInput = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
+
+    let faqs = [];
+
+    // Load chat history
+    window.onload = () => {
+      const saved = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+      saved.forEach(msg => addMessage(msg.text, msg.sender));
+      scrollToBottom();
+    };
+
+    // Load FAQs
+    fetch('faqs.json')
+      .then(res => res.json())
+      .then(data => {
+        faqs = data.faqs.flatMap(cat => cat.questions);
+      })
+      .catch(() => addMessage("Hello! I'm RecruIT 😊 — I couldn’t load FAQs right now, but I can still chat!", "bot"));
+
+    sendBtn.addEventListener("click", sendMessage);
+    userInput.addEventListener("keypress", e => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    function sendMessage() {
+      const text = userInput.value.trim();
+      if (!text) return;
+      addMessage(text, "user");
+      userInput.value = "";
+      showTyping();
+
+      setTimeout(() => {
+        hideTyping();
+        const response = getResponse(text);
+        addMessage(response, "bot");
+        saveChat();
+      }, 800);
+    }
+
+    function addMessage(text, sender) {
+      const div = document.createElement("div");
+      div.className = `message ${sender}`;
+      div.textContent = text;
+      chatBox.appendChild(div);
+      scrollToBottom();
+    }
+
+    function scrollToBottom() {
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function showTyping() {
+      const typing = document.createElement("div");
+      typing.className = "typing";
+      typing.id = "typing";
+      typing.textContent = "RecruIT is typing...";
+      chatBox.appendChild(typing);
+      scrollToBottom();
+    }
+
+    function hideTyping() {
+      const typing = document.getElementById("typing");
+      if (typing) typing.remove();
+    }
+
+    function saveChat() {
+      const messages = [...chatBox.querySelectorAll(".message")].map(m => ({
+        text: m.textContent,
+        sender: m.classList.contains("user") ? "user" : "bot"
+      }));
+      localStorage.setItem("chatHistory", JSON.stringify(messages));
+    }
+
+    // ✅ SMART RESPONSE LOGIC
+    function getResponse(input) {
+      const text = input.toLowerCase();
+      const greetings = ["hi", "hello", "hey", "good morning", "good evening"];
+      if (greetings.some(g => text.includes(g))) {
+        return "Hello there! 👋 How can I assist you with NextGen Systems’ careers today?";
+      }
+
+      for (const faq of faqs) {
+        const qWords = faq.question.toLowerCase().split(" ");
+        const matches = qWords.filter(word => text.includes(word));
+        if (matches.length > 2 || text.includes(faq.question.toLowerCase().split(" ")[0])) {
+          return faq.answer;
+        }
+      }
+
+      return "Sorry, I’m not sure about that. Please visit our Careers Page for more details.";
+    }
+  </script>
 </body>
 </html>

@@ -1,35 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RecruIT – NextGen Systems</title>
-  <link rel="stylesheet" href="style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
   <div class="chat-container">
     <div class="chat-header">
-      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" class="bot-avatar" alt="Bot Avatar">
-      <div>
-        <h2>RecruIT – NextGen Systems</h2>
-        <span class="status-dot online"></span> <small>Online</small>
-      </div>
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" alt="Bot Avatar" class="bot-avatar">
+      <h2>RecruIT – NextGen Systems</h2>
     </div>
-
-    <div class="chat-box" id="chatBox"></div>
-
-    <div class="typing-indicator" id="typingIndicator">
-      <span></span><span></span><span></span>
+    <div class="chat-box" id="chat-box">
+      <div class="bot-message">👋 Hello! I’m <strong>RecruIT</strong>, your virtual assistant. How can I help you today?</div>
     </div>
-
     <div class="chat-input">
-      <input type="text" id="userInput" placeholder="Ask me about careers, hiring, or jobs...">
-      <button id="sendBtn">Send</button>
+      <input type="text" id="user-input" placeholder="Ask me about careers, hiring, or jobs..." />
+      <button id="send-btn">Send</button>
     </div>
   </div>
-
   <script src="script.js"></script>
 </body>
 </html>

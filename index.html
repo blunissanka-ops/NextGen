@@ -9,28 +9,34 @@
 </head>
 <body>
   <div class="chat-container">
-    <div class="chat-header">
-      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712107.png" class="bot-avatar" alt="Bot Avatar">
-      <div>
-        <h2>RecruIT – NextGen Systems</h2>
-        <p class="status">🟢 Online</p>
+    <header class="chat-header">
+      <div class="bot-avatar">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Bot Avatar" />
       </div>
-    </div>
+      <div class="bot-info">
+        <h2>RecruIT</h2>
+        <p>NextGen Systems • <span class="status-dot"></span> Online</p>
+      </div>
+    </header>
 
-    <div class="chat-box" id="chat-box">
-      <div class="bot-message">Hello! 👋 I’m <strong>RecruIT</strong>, your virtual assistant. How can I help you today?</div>
-    </div>
-
-    <div class="suggestions">
-      <button>How can I apply?</button>
-      <button>Hiring process</button>
-      <button>Internships</button>
-      <button>Office location</button>
+    <div id="chatbox" class="chat-box"></div>
+    
+    <div id="typingIndicator" class="typing hidden">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
     </div>
 
     <div class="input-area">
-      <input type="text" id="user-input" placeholder="Ask me about careers, hiring, or jobs..." />
-      <button id="send-btn">Send</button>
+      <input type="text" id="userInput" placeholder="Ask me about careers, hiring, or jobs..." autocomplete="off" />
+      <button id="sendBtn">Send</button>
+    </div>
+
+    <div class="suggestions">
+      <button class="suggestion">How can I apply?</button>
+      <button class="suggestion">Do I need a degree?</button>
+      <button class="suggestion">Can I apply again?</button>
+      <button class="suggestion">Application status</button>
     </div>
   </div>
 

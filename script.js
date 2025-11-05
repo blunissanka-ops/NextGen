@@ -1,77 +1,81 @@
-let faqs = {};
+let faqs = [];
 
-async function loadFaqs() {
-  try {
-    const response = await fetch("faqs.json?nocache=" + Date.now());
-    if (!response.ok) throw new Error("Failed to fetch FAQs");
-    const data = await response.json();
-    faqs = data.faqs || {};
-    console.log("✅ FAQs loaded:", faqs);
-  } catch (error) {
-    console.error("❌ FAQ load error:", error);
-    appendMessage("bot", "Hello! I'm RecruIT 😊 — I couldn’t load FAQs right now, but I can still chat!");
-  }
-  showGreeting();
-  loadChatHistory();
+// Load FAQs from JSON
+fetch("faqs.json")
+  .then(res => res.json())
+  .then(data => {
+    faqs = data;
+    console.log("✅ FAQs Loaded");
+  })
+  .catch(() => {
+    showMessage("bot", "Hello! I'm RecruIT 😊 — I couldn’t load FAQs right now, but I can still chat!");
+  });
+
+const chatBox = document.getElementById("chat-box");
+const input = document.getElementById("user-input");
+const sendBtn = document.getElementById("send-btn");
+
+// Greeting on reload
+if (!localStorage.getItem("visited")) {
+  showMessage("bot", "Hey! 😊 I’m RecruIT, here to guide you with NextGen Systems’ recruitment process.");
+  localStorage.setItem("visited", true);
 }
 
-function appendMessage(sender, text) {
-  const chatBox = document.getElementById("chatBox");
-  const message = document.createElement("div");
-  message.classList.add("message", sender);
-  message.textContent = text;
-  chatBox.appendChild(message);
-  chatBox.scrollTop = chatBox.scrollHeight;
-  saveChatHistory();
-}
-
-function showGreeting() {
-  appendMessage("bot", "👋 Hello! I’m RecruIT, your virtual assistant. How can I help you today?");
-}
-
-function findAnswer(userMessage) {
-  userMessage = userMessage.toLowerCase();
-  for (const [question, answer] of Object.entries(faqs)) {
-    if (userMessage.includes(question)) return answer;
-  }
-  return "Sorry, I’m not sure about that. Please visit our Careers Page for more details.";
-}
-
-document.getElementById("sendBtn").addEventListener("click", handleUserInput);
-document.getElementById("userInput").addEventListener("keypress", e => {
-  if (e.key === "Enter") handleUserInput();
+// Handle sending messages
+sendBtn.addEventListener("click", sendMessage);
+input.addEventListener("keypress", e => {
+  if (e.key === "Enter") sendMessage();
 });
 
-function handleUserInput() {
-  const inputField = document.getElementById("userInput");
-  const userMessage = inputField.value.trim();
-  if (!userMessage) return;
+function sendMessage() {
+  const userText = input.value.trim();
+  if (!userText) return;
+  showMessage("user", userText);
+  input.value = "";
 
-  appendMessage("user", userMessage);
-  inputField.value = "";
-
-  showTypingIndicator(true);
-
+  showTypingIndicator();
   setTimeout(() => {
-    showTypingIndicator(false);
-    const botResponse = findAnswer(userMessage);
-    appendMessage("bot", botResponse);
+    hideTypingIndicator();
+    handleBotResponse(userText);
   }, 1000);
 }
 
-function showTypingIndicator(show) {
-  const typing = document.getElementById("typingIndicator");
-  typing.style.display = show ? "flex" : "none";
+function showMessage(sender, text) {
+  const msg = document.createElement("div");
+  msg.classList.add(sender === "user" ? "user-message" : "bot-message");
+  msg.textContent = text;
+  chatBox.appendChild(msg);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function saveChatHistory() {
-  const chatBox = document.getElementById("chatBox");
-  localStorage.setItem("chatHistory", chatBox.innerHTML);
+function showTypingIndicator() {
+  const typing = document.createElement("div");
+  typing.classList.add("bot-message", "typing");
+  typing.textContent = "RecruIT is typing...";
+  typing.id = "typing";
+  chatBox.appendChild(typing);
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-function loadChatHistory() {
-  const history = localStorage.getItem("chatHistory");
-  if (history) document.getElementById("chatBox").innerHTML = history;
+function hideTypingIndicator() {
+  const typing = document.getElementById("typing");
+  if (typing) typing.remove();
 }
 
-window.onload = loadFaqs;
+function handleBotResponse(userText) {
+  userText = userText.toLowerCase();
+
+  // Greeting detection
+  if (["hi", "hello", "hey", "good morning", "good afternoon"].some(g => userText.includes(g))) {
+    showMessage("bot", "Hello there! 👋 How can I assist you with NextGen Systems’ careers today?");
+    return;
+  }
+
+  // Find matching FAQ
+  const found = faqs.find(f => userText.includes(f.question.toLowerCase().split(" ")[0]));
+  if (found) {
+    showMessage("bot", found.answer);
+  } else {
+    showMessage("bot", "Sorry, I’m not sure about that. Please visit our Careers Page for more details.");
+  }
+}

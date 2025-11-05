@@ -5,21 +5,35 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RecruIT – NextGen Systems</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="chat-container">
     <div class="chat-header">
-      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" alt="Bot Avatar" class="bot-avatar">
-      <h2>RecruIT – NextGen Systems</h2>
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712107.png" class="bot-avatar" alt="Bot Avatar">
+      <div>
+        <h2>RecruIT – NextGen Systems</h2>
+        <p class="status">🟢 Online</p>
+      </div>
     </div>
+
     <div class="chat-box" id="chat-box">
-      <div class="bot-message">👋 Hello! I’m <strong>RecruIT</strong>, your virtual assistant. How can I help you today?</div>
+      <div class="bot-message">Hello! 👋 I’m <strong>RecruIT</strong>, your virtual assistant. How can I help you today?</div>
     </div>
-    <div class="chat-input">
+
+    <div class="suggestions">
+      <button>How can I apply?</button>
+      <button>Hiring process</button>
+      <button>Internships</button>
+      <button>Office location</button>
+    </div>
+
+    <div class="input-area">
       <input type="text" id="user-input" placeholder="Ask me about careers, hiring, or jobs..." />
       <button id="send-btn">Send</button>
     </div>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>

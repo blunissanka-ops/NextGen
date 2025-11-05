@@ -1,24 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RecruIT - NextGen Chatbot</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RecruIT – NextGen Systems</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div class="chat-wrapper">
     <div class="chat-container">
-        <header>
-            <h1>🤖 RecruIT Chatbot</h1>
-            <p>Your AI Assistant for NextGen Systems Careers</p>
-        </header>
-        <div id="chatbox" class="chatbox">
-            </div>
-        <div class="input-area">
-            <input type="text" id="userInput" placeholder="Ask a question about applying or qualifications...">
-            <button id="sendBtn">Send</button>
+      <div class="chat-header">
+        <div class="header-left">
+          <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Bot Avatar" class="bot-avatar" />
+          <div>
+            <h2>RecruIT</h2>
+            <p class="status">
+              <span class="status-dot"></span> Online
+            </p>
+          </div>
         </div>
+        <span class="company-name">NextGen Systems</span>
+      </div>
+
+      <div class="chat-box" id="chat-box"></div>
+
+      <div id="typing" class="typing hidden">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+
+      <div class="suggestions" id="suggestions">
+        <button>Application Status</button>
+        <button>How to Apply</button>
+        <button>Do I Need a Degree?</button>
+        <button>Training Programs</button>
+      </div>
+
+      <div class="input-area">
+        <input type="text" id="user-input" placeholder="Ask me about careers, hiring, or jobs..." />
+        <button id="send-btn">Send</button>
+      </div>
     </div>
-    <script src="script.js"></script>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>

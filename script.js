@@ -2,80 +2,76 @@ let faqs = {};
 
 async function loadFaqs() {
   try {
-    const response = await fetch("./faqs.json?nocache=" + new Date().getTime());
-    if (!response.ok) throw new Error("Could not load FAQs");
+    const response = await fetch("faqs.json?nocache=" + Date.now());
+    if (!response.ok) throw new Error("Failed to fetch FAQs");
     const data = await response.json();
     faqs = data.faqs || {};
     console.log("✅ FAQs loaded:", faqs);
   } catch (error) {
-    console.error("❌ Error loading FAQs:", error);
+    console.error("❌ FAQ load error:", error);
     appendMessage("bot", "Hello! I'm RecruIT 😊 — I couldn’t load FAQs right now, but I can still chat!");
   }
   showGreeting();
   loadChatHistory();
 }
 
-function showGreeting() {
-  appendMessage("bot", "Hello! 👋 I’m RecruIT, your virtual assistant. How can I help you today?");
-}
-
 function appendMessage(sender, text) {
-  const chatbox = document.getElementById("chatbox");
-  const msg = document.createElement("div");
-  msg.classList.add("message", sender);
-  msg.innerText = text;
-  chatbox.appendChild(msg);
-  chatbox.scrollTop = chatbox.scrollHeight;
+  const chatBox = document.getElementById("chatBox");
+  const message = document.createElement("div");
+  message.classList.add("message", sender);
+  message.textContent = text;
+  chatBox.appendChild(message);
+  chatBox.scrollTop = chatBox.scrollHeight;
   saveChatHistory();
 }
 
-function saveChatHistory() {
-  localStorage.setItem("chatHistory", document.getElementById("chatbox").innerHTML);
+function showGreeting() {
+  appendMessage("bot", "👋 Hello! I’m RecruIT, your virtual assistant. How can I help you today?");
 }
 
-function loadChatHistory() {
-  const saved = localStorage.getItem("chatHistory");
-  if (saved) document.getElementById("chatbox").innerHTML = saved;
-}
-
-function findAnswer(userInput) {
-  const question = userInput.toLowerCase();
-  for (let key in faqs) {
-    if (question.includes(key)) return faqs[key];
+function findAnswer(userMessage) {
+  userMessage = userMessage.toLowerCase();
+  for (const [question, answer] of Object.entries(faqs)) {
+    if (userMessage.includes(question)) return answer;
   }
   return "Sorry, I’m not sure about that. Please visit our Careers Page for more details.";
 }
 
-function showTyping(callback) {
-  const typing = document.getElementById("typingIndicator");
-  typing.classList.remove("hidden");
+document.getElementById("sendBtn").addEventListener("click", handleUserInput);
+document.getElementById("userInput").addEventListener("keypress", e => {
+  if (e.key === "Enter") handleUserInput();
+});
+
+function handleUserInput() {
+  const inputField = document.getElementById("userInput");
+  const userMessage = inputField.value.trim();
+  if (!userMessage) return;
+
+  appendMessage("user", userMessage);
+  inputField.value = "";
+
+  showTypingIndicator(true);
+
   setTimeout(() => {
-    typing.classList.add("hidden");
-    callback();
+    showTypingIndicator(false);
+    const botResponse = findAnswer(userMessage);
+    appendMessage("bot", botResponse);
   }, 1000);
 }
 
-document.getElementById("sendBtn").addEventListener("click", () => {
-  const input = document.getElementById("userInput");
-  const text = input.value.trim();
-  if (text === "") return;
-  appendMessage("user", text);
-  input.value = "";
-  showTyping(() => {
-    const answer = findAnswer(text);
-    appendMessage("bot", answer);
-  });
-});
+function showTypingIndicator(show) {
+  const typing = document.getElementById("typingIndicator");
+  typing.style.display = show ? "flex" : "none";
+}
 
-document.getElementById("userInput").addEventListener("keypress", (e) => {
-  if (e.key === "Enter") document.getElementById("sendBtn").click();
-});
+function saveChatHistory() {
+  const chatBox = document.getElementById("chatBox");
+  localStorage.setItem("chatHistory", chatBox.innerHTML);
+}
 
-document.querySelectorAll(".suggestion").forEach(btn => {
-  btn.addEventListener("click", () => {
-    document.getElementById("userInput").value = btn.textContent;
-    document.getElementById("sendBtn").click();
-  });
-});
+function loadChatHistory() {
+  const history = localStorage.getItem("chatHistory");
+  if (history) document.getElementById("chatBox").innerHTML = history;
+}
 
-loadFaqs();
+window.onload = loadFaqs;

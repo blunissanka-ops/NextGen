@@ -1,24 +1,22 @@
 const chatBox = document.querySelector('.chat-box');
 const userInput = document.querySelector('#user-input');
 const sendBtn = document.querySelector('#send-btn');
-const clearBtn = document.querySelector('#clear-btn'); // New Clear button
+const clearBtn = document.querySelector('#clear-btn');
 
 let faqsData = [];
 
-// Load FAQs from JSON
+// Load FAQs
 fetch('faqs.json')
-  .then(response => response.json())
-  .then(data => {
-    faqsData = data.faqs.flatMap(cat => cat.questions);
-  })
-  .catch(error => console.error('Error loading FAQs:', error));
+  .then(res => res.json())
+  .then(data => faqsData = data.faqs.flatMap(cat => cat.questions))
+  .catch(err => console.error('Error loading FAQs:', err));
 
-// Append message to chat
+// Append message
 function appendMessage(sender, text) {
   const msg = document.createElement('div');
   msg.classList.add('message', sender);
   msg.innerHTML = `<p>${text}</p>`;
-  chatBox.appendChild(msg);
+  chatBox.appendChild(msg) ;
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 

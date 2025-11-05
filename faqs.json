@@ -5,7 +5,7 @@
       "questions": [
         {
           "question": "How can I apply for a job at NextGen Systems?",
-          "answer": "You can apply directly through our Careers Page by selecting the role you’re interested in and clicking 'Apply Now'. Once you submit your CV and details, our recruitment team will review your application and contact you if you are shortlisted."
+          "answer": "You can apply directly through our Careers Page by selecting the role you’re interested in and clicking “Apply Now”. Once you submit your CV and details, our recruitment team will review your application and contact you if you are shortlisted."
         },
         {
           "question": "Can I apply for more than one position at the same time?",
@@ -30,7 +30,7 @@
       ]
     },
     {
-      "category": "Requirements & Qualifications",
+      "category": "Requirements and Qualifications",
       "questions": [
         {
           "question": "What are the basic qualifications needed to apply for a position in your company?",
@@ -38,11 +38,11 @@
         },
         {
           "question": "Are there any age or experience limits for applying to jobs?",
-          "answer": "No, there isn’t an exact age requirement to apply for the job. However, some positions do require a certain time period of experience. For example, senior roles usually require 3–5 years of work experience, while internships or junior positions are available for new graduates."
+          "answer": "No, there isn’t an exact age requirement to apply for the job. But some positions do require a certain time period of experience. For example, senior roles usually require 3–5 years of work experience, while internships or junior positions are available for new graduates."
         },
         {
           "question": "How can I know if I meet the qualifications for a particular job?",
-          "answer": "Each job posting includes a detailed list of required qualifications, skills, and experience. Before applying, compare your educational background and work experience with those mentioned in the job description. If you meet most of the listed requirements, you’re suitable to apply."
+          "answer": "Each job posting includes a detailed list of required qualifications, skills, and experience. Before applying, you can compare your educational background and work experience with those mentioned in the job description. If you meet most of the listed requirements, you’re suitable to apply for the job."
         },
         {
           "question": "Are professional qualifications required?",
@@ -50,16 +50,16 @@
         },
         {
           "question": "Does the company provide training programs if I don’t meet all requirements?",
-          "answer": "Yes! We believe in growth. Our Learning and Development team offers training programs to assist employees in bridging skill gaps for their current and future roles."
+          "answer": "Yes! We believe in growth. For their current and future roles, our Learning and Development team offers training programs to assist employees in acquiring skills gaps."
         }
       ]
     },
     {
-      "category": "Application Status & Feedback",
+      "category": "Application Status and Feedback",
       "questions": [
         {
           "question": "What is the current status of my job application?",
-          "answer": "You can check your application status by logging into your candidate profile on our Careers Portal. Once logged in, select 'My Applications' to view whether your application is under review, shortlisted, or completed."
+          "answer": "You can check your application status by logging into your candidate profile on our careers portal. Once logged in, select “My Applications” to view whether your application is under review, shortlisted, or completed."
         },
         {
           "question": "How long does it take to receive feedback after an interview?",
@@ -71,11 +71,11 @@
         },
         {
           "question": "Can I request detailed feedback on my interview performance?",
-          "answer": "Yes, you may request feedback by replying to your interview confirmation email or contacting the HR Recruitment Team through the Careers Portal. Feedback is provided where possible to help candidates improve for future opportunities."
+          "answer": "Yes, you may request feedback by replying to your interview confirmation email or contacting the HR Recruitment Team through the careers portal. Feedback is provided where possible to help candidates improve for future opportunities."
         },
         {
-          "question": "My application has been 'Under Review' for a long time. What does that mean?",
-          "answer": "‘Under Review’ means your application is still being evaluated by our recruitment team or the hiring manager. Sometimes, reviews take longer due to a high volume of applications or ongoing internal discussions."
+          "question": "My application has been under review for a long time. What does that mean?",
+          "answer": "“Under Review” means your application is still being evaluated by our recruitment team or the hiring manager. Sometimes, reviews take longer due to a high volume of applications or ongoing internal discussions."
         },
         {
           "question": "Can I update my resume or details after submitting the application?",
@@ -83,12 +83,12 @@
         },
         {
           "question": "If I’m not selected for this role, can I apply again?",
-          "answer": "Absolutely! We encourage you to apply for other roles that match your skills and experience. You can also join our talent pool to be considered for future openings that suit your profile."
+          "answer": "Absolutely! If you’re not selected for a specific role, you’re always welcome to apply again for other openings or future vacancies that match your skills and interests. We encourage candidates to keep checking our Careers Page regularly."
         }
       ]
     },
     {
-      "category": "Interview-Related Questions",
+      "category": "Interview Process",
       "questions": [
         {
           "question": "When will I be called for the interview after submitting my application?",
@@ -104,7 +104,7 @@
         },
         {
           "question": "How can I prepare for the interview?",
-          "answer": "Review the job description, learn about NextGen Systems’ products and culture, and be ready to discuss your skills, experience, and achievements. RecruIT can share sample interview questions if you’d like!"
+          "answer": "Review the job description, learn about NextGen Systems’ products and culture, and be ready to discuss your skills, experience, and achievements."
         },
         {
           "question": "Who will conduct my interview and how long will it take?",
@@ -117,23 +117,23 @@
       "questions": [
         {
           "question": "What are the qualifying conditions for requesting job opportunities internally at NextGen Systems?",
-          "answer": "If your current role has lasted at least six months, you have a satisfactory performance history, and your immediate supervisor approves, you may apply for internal vacancies. Some positions may require specific skills or certifications, which will be specified in the vacancy advertisement."
+          "answer": "If your current role has lasted at least six months, you have a satisfactory performance history, and your immediate supervisor approves, you may apply for internal vacancies. Some positions may require certain skills or certifications."
         },
         {
           "question": "How do I search and apply for existing internal job opportunities?",
-          "answer": "You can explore all open internal positions through the NextGen Employee Portal → Careers Section. Click 'Apply Internally', upload your most recent resume, and submit your application. If your profile matches, the recruitment team will contact you after an email confirmation."
+          "answer": "The NextGen Employee Portal → Careers Section allows you to view all open internal positions. Just click 'Apply Internally,' upload your most recent resume, and submit your application. If your profile fits the standards, our recruitment staff will get in touch with you after you receive an email confirmation."
         },
         {
           "question": "Does the organization have pathways available for internal promotions?",
-          "answer": "Yes! NextGen Systems has a structured Career Development Framework that outlines progression paths from Junior → Intermediate → Senior → Lead roles. Based on your performance and development goals, you can transition into specialized areas like Cloud, Automation, DevOps, or AI Engineering."
+          "answer": "Yes! A systematic path from Junior → Intermediate → Senior → Lead roles is outlined in NextGen Systems' Career Development Framework. Depending on your performance, abilities, and development objectives, we can assist transitions into specialized fields like cloud solutions, automation architecture, DevOps, and AI engineering."
         },
         {
-          "question": "What formal training or upskilling programs does the organization offer?",
-          "answer": "We offer multiple upskilling opportunities, such as internal workshops led by experts, online learning modules in AI, Data Science, Cloud, and Cybersecurity, certification support programs (AWS, Azure, Google Cloud, Scrum), and project-based learning for hands-on experience."
+          "question": "What formal training or upskilling programs does the organization offer to employees?",
+          "answer": "We provide a range of opportunities for upskilling, such as internal workshops conducted by our engineers, online learning modules, certification support (AWS, Azure, Scrum), and project-based learning."
         },
         {
-          "question": "How does the internal mobility process work at NextGen Systems?",
-          "answer": "Our internal mobility process is straightforward: 1️⃣ Browse open internal positions on the Employee Portal. 2️⃣ Submit an internal application. 3️⃣ HR and the hiring manager review your application. 4️⃣ Attend an interview if shortlisted. 5️⃣ Upon approval, HR coordinates your transfer with the new department. You may also discuss intra-department transfers directly with your supervisor or HRBP."
+          "question": "Can you tell me how the internal mobility process works at NextGen Systems?",
+          "answer": "You can look for open internal positions in the Employee Portal, apply, and if selected, HR will coordinate the transfer between your current and new department. You may also discuss project transfers directly with your HRBP."
         }
       ]
     }

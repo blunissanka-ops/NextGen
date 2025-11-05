@@ -1,27 +1,38 @@
-{
-  "faqs": {
-    "how can i apply for a job": "You can apply directly through our Careers Page by selecting the role you’re interested in and clicking “Apply Now”. Once you submit your CV and details, our recruitment team will review your application and contact you if you are shortlisted.",
-    "can i apply for more than one position": "Absolutely! If you feel you’re suitable for multiple roles, you’re welcome to apply for more than one. Just make sure each application matches your skills and experience.",
-    "what documents do i need to submit": "You’ll need to upload your updated CV. We also encourage you to include a cover letter and links to your portfolio or LinkedIn profile, especially for technical roles.",
-    "how will i know if my application was received": "Once your application is successfully submitted, you’ll receive an email confirmation. You may also get a message from RecruIT acknowledging your submission.",
-    "can i apply if i dont have previous it industry experience": "Yes! We welcome applications from fresh graduates and those from other industries. If you have the passion and willingness to learn, we encourage you to apply. Some roles are specifically designed for entry-level applicants.",
-    "do i need a degree to apply": "A degree is beneficial but not mandatory for all roles. We value skills, practical experience, and creativity. If you don’t have a degree but have strong project experience or certifications, we’d still love to hear from you.",
-    "what are the basic qualifications needed": "To apply for any position, you should have at least the educational background and experience mentioned in the job advertisement. Generally, a diploma or degree is preferred for starter roles, while technical positions may need specific training.",
-    "are there any age or experience limits": "No, there’s no strict age limit. However, senior roles typically require 3–5 years of experience, while internships and junior positions are open to new graduates.",
-    "how can i know if i meet the qualifications": "Each job posting lists the required qualifications and skills. Compare your background with the job description — if you meet most of the requirements, you’re encouraged to apply.",
-    "are professional qualifications required": "Not always! Certifications like CIMA, ACCA, PMP, or HRM Diplomas are an advantage but not a must unless mentioned in the job description.",
-    "does the company provide training": "Yes! We believe in growth. Our Learning and Development team offers training programs to help employees bridge skill gaps and grow within their roles.",
-    "what is the current status of my job application": "You can check your application status by logging into your candidate profile on our Careers Portal. Go to ‘My Applications’ to view if your application is under review, shortlisted, or completed.",
-    "how long does it take to receive feedback after an interview": "Our recruitment team usually provides feedback within 7–10 working days after your interview, though it may vary depending on the role.",
-    "will i be notified if i am not selected": "Yes! We notify every candidate about their application outcome. You’ll receive an email once the recruitment process for that role is completed.",
-    "can i request feedback on my interview": "Yes! You can request feedback by replying to your interview confirmation email or contacting the HR Recruitment Team through the Careers Portal. Feedback is provided whenever possible.",
-    "my application has been under review for a long time": "‘Under Review’ means your application is still being evaluated by our recruitment team or hiring manager. Reviews may take longer due to high application volumes or ongoing internal discussions.",
-    "can i update my resume after submitting": "Yes, you can update your details by logging into your profile before the job posting closes. After the deadline, edits aren’t possible, but you can submit a new updated application.",
-    "if im not selected can i apply again": "Absolutely! We encourage you to apply for other suitable roles or join our talent pool to be considered for future opportunities.",
-    "when will i be called for the interview": "After submitting your application, our HR team reviews it within 5–7 working days. If you’re shortlisted, you’ll receive an interview invitation via email or SMS.",
-    "how will the interview be conducted": "We usually conduct the first round online (via Google Meet or MS Teams). The final round is generally held on-site at our Colombo office. The interview type will be clearly mentioned in your invitation.",
-    "what should i bring to the interview": "Please bring a printed CV, national ID, and any supporting documents such as certificates or portfolios. For online interviews, ensure you have a stable internet connection and quiet environment.",
-    "how can i prepare for the interview": "Review the job description, learn about NextGen Systems’ products and culture, and be ready to discuss your skills and achievements. RecruIT can also share sample interview tips!",
-    "who will conduct my interview": "Interviews are usually conducted by our HR panel and department managers. The process takes about 30–45 minutes, and you’ll be informed of the interviewer details in advance."
+[
+  {
+    "question": "How can I apply for a job at NextGen Systems?",
+    "answer": "You can apply directly through our Careers Page by selecting the role you’re interested in and clicking 'Apply Now'. Once you submit your CV and details, our recruitment team will review your application and contact you if you are shortlisted."
+  },
+  {
+    "question": "Can I apply for more than one position?",
+    "answer": "Absolutely! If you feel you’re suitable for multiple roles, you’re welcome to apply for more than one. Just make sure each application matches your skills and experience."
+  },
+  {
+    "question": "Do I need a degree to apply?",
+    "answer": "A degree is beneficial, but not mandatory for all roles. We value skills, practical experience, problem-solving ability, and creativity."
+  },
+  {
+    "question": "What documents do I need to submit?",
+    "answer": "You should upload your updated CV. A cover letter and links to your portfolio or LinkedIn profile are also recommended."
+  },
+  {
+    "question": "Can I apply if I don’t have IT experience?",
+    "answer": "Yes! We welcome fresh graduates and career changers who are passionate and eager to learn. Some roles are specifically designed for entry-level applicants."
+  },
+  {
+    "question": "What is the current status of my job application?",
+    "answer": "You can check your application status by logging into your candidate profile on our careers portal and selecting 'My Applications'."
+  },
+  {
+    "question": "How long does it take to receive feedback after an interview?",
+    "answer": "Typically, our recruitment team provides feedback within 7–10 working days after your interview."
+  },
+  {
+    "question": "Can I update my resume after submitting?",
+    "answer": "Yes, you can update your details by logging into your profile before the job posting closes. Once the deadline passes, you can submit a new application."
+  },
+  {
+    "question": "Who will conduct my interview?",
+    "answer": "Interviews are conducted by our HR panel and department managers. The process usually takes 30–45 minutes depending on the role."
   }
-}
+]

@@ -1,60 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>RecruIT — NextGen Systems</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RecruIT – NextGen Systems</title>
   <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="page-bg">
-    <div class="card">
-      <header class="card-header">
-        <div class="left">
-          <div id="avatar" class="avatar">
-            <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="RecruIT avatar" />
-          </div>
-          <div class="titles">
-            <div class="main-title">RecruIT</div>
-            <div class="sub-title">NextGen Systems • <span class="status-dot"></span> Online</div>
-          </div>
-        </div>
-
-        <div class="right-controls">
-          <button id="themeToggle" class="icon-btn" title="Toggle theme">🌗</button>
-          <button id="clearBtn" class="icon-btn" title="Clear chat">🗑️</button>
-        </div>
-      </header>
-
-      <!-- Chat area -->
-      <div id="chatArea" class="chat-area">
-        <div id="messages" class="messages" aria-live="polite"></div>
+  <div class="chat-container">
+    <header class="chat-header">
+      <div class="bot-avatar">
+        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Bot Avatar" />
       </div>
-
-      <!-- typing indicator (bubble) -->
-      <div id="typing" class="typing hidden">
-        <div class="typing-bubble">
-          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-        </div>
+      <div class="bot-info">
+        <h2>RecruIT</h2>
+        <p>NextGen Systems • <span class="status-dot"></span> Online</p>
       </div>
+    </header>
 
-      <!-- suggestions -->
-      <div class="suggestion-row" id="suggestions">
-        <button class="chip">How can I apply for a job?</button>
-        <button class="chip">Do I need a degree?</button>
-        <button class="chip">Application status</button>
-        <button class="chip">Interview tips</button>
-      </div>
+    <div id="chatbox" class="chat-box"></div>
+    
+    <div id="typingIndicator" class="typing hidden">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
 
-      <!-- input area -->
-      <div class="composer">
-        <input id="userInput" type="text" placeholder="Ask about careers, hiring, interviews..." autocomplete="off" />
-        <button id="sendBtn" class="send">Send ➤</button>
-      </div>
+    <div class="input-area">
+      <input type="text" id="userInput" placeholder="Ask me about careers, hiring, or jobs..." autocomplete="off" />
+      <button id="sendBtn">Send</button>
+    </div>
 
-      <!-- scroll to bottom -->
-      <button id="scrollDownBtn" class="scroll-down hidden" title="Scroll to latest">▼</button>
+    <div class="suggestions">
+      <button class="suggestion">How can I apply?</button>
+      <button class="suggestion">Do I need a degree?</button>
+      <button class="suggestion">Can I apply again?</button>
+      <button class="suggestion">Application status</button>
     </div>
   </div>
 

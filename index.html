@@ -4,33 +4,47 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RecruIT – NextGen Systems</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="chat-container">
-    <div class="chat-header">
-      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712107.png" class="bot-avatar" alt="Bot Avatar">
-      <div>
-        <h2>RecruIT – NextGen Systems</h2>
-        <p class="status">🟢 Online</p>
+  <div class="chat-wrapper">
+    <div class="chat-container">
+      <div class="chat-header">
+        <div class="header-left">
+          <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Bot Avatar" class="bot-avatar" />
+          <div>
+            <h2>RecruIT</h2>
+            <p class="status">
+              <span class="status-dot"></span> Online
+            </p>
+          </div>
+        </div>
+        <span class="company-name">NextGen Systems</span>
       </div>
-    </div>
 
-    <div class="chat-box" id="chat-box">
-      <div class="bot-message">Hello! 👋 I’m <strong>RecruIT</strong>, your virtual assistant. How can I help you today?</div>
-    </div>
+      <div class="chat-box" id="chat-box"></div>
 
-    <div class="suggestions">
-      <button>How can I apply?</button>
-      <button>Hiring process</button>
-      <button>Internships</button>
-      <button>Office location</button>
-    </div>
+      <div id="typing" class="typing hidden">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
 
-    <div class="input-area">
-      <input type="text" id="user-input" placeholder="Ask me about careers, hiring, or jobs..." />
-      <button id="send-btn">Send</button>
+      <div class="suggestions" id="suggestions">
+        <button>Application Status</button>
+        <button>How to Apply</button>
+        <button>Do I Need a Degree?</button>
+        <button>Training Programs</button>
+      </div>
+
+      <div class="input-area">
+        <input type="text" id="user-input" placeholder="Ask me about careers, hiring, or jobs..." />
+        <button id="send-btn">Send</button>
+      </div>
     </div>
   </div>
 

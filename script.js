@@ -4,17 +4,27 @@ const sendBtn = document.getElementById("send-btn");
 const typingIndicator = document.getElementById("typing-indicator");
 
 let faqs = {};
-let greetings = [];
+let greetings = [
+  "Hello! 👋 I'm RecruIT, your AI assistant from NextGen Systems. How can I help you today?",
+  "Hi there! 👋 Looking for information about careers or job applications?",
+  "Hey! 😊 I’m RecruIT, here to guide you with NextGen Systems’ recruitment process."
+];
 
-// Load FAQ data from JSON
-fetch("faqs.json")
-  .then(res => res.json())
-  .then(data => {
-    faqs = data.faqs;
-    greetings = data.greetings;
-    showGreeting();
-    loadChatHistory();
-  });
+// Load FAQ data from JSON file
+async function loadFaqs() {
+  try {
+    const response = await fetch("faqs.json");
+    if (!response.ok) throw new Error("Could not load FAQs");
+    const data = await response.json();
+    faqs = data.faqs || {};
+    console.log("✅ FAQs Loaded:", faqs);
+  } catch (error) {
+    console.error("❌ Error loading FAQs:", error);
+    appendMessage("bot", "Hello! I'm RecruIT 😊 — I couldn’t load FAQs now, but I can still chat!");
+  }
+  showGreeting();
+  loadChatHistory();
+}
 
 // Display greeting message randomly
 function showGreeting() {
@@ -46,7 +56,7 @@ function loadChatHistory() {
 // Typing indicator
 function showTyping() {
   typingIndicator.classList.remove("hidden");
-  setTimeout(() => typingIndicator.classList.add("hidden"), 1000);
+  setTimeout(() => typingIndicator.classList.add("hidden"), 800);
 }
 
 // Send button click
@@ -78,3 +88,6 @@ function botReply(input) {
 
   appendMessage("bot", response);
 }
+
+// Load everything
+loadFaqs();

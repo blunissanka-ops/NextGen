@@ -2,7 +2,7 @@ let faqs = {};
 
 async function loadFaqs() {
   try {
-    const response = await fetch("faqs.json?nocache=" + new Date().getTime());
+    const response = await fetch("./faqs.json?nocache=" + new Date().getTime());
     if (!response.ok) throw new Error("Could not load FAQs");
     const data = await response.json();
     faqs = data.faqs || {};

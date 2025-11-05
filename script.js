@@ -47,11 +47,14 @@ function cleanText(text) {
     .trim();
 }
 
-// Find best matching answer
 function findAnswer(userMessage) {
   const cleanedMessage = cleanText(userMessage);
 
-  // Use a scoring system to find the best match
+  // First, try exact keyword match in cleaned questions
+  const exactMatch = faqsData.find(faq => cleanText(faq.question) === cleanedMessage);
+  if (exactMatch) return exactMatch.answer;
+
+  // If no exact match, use word-based scoring
   let bestMatch = null;
   let highestScore = 0;
 
@@ -59,13 +62,12 @@ function findAnswer(userMessage) {
     const cleanedQuestion = cleanText(faq.question);
     const words = cleanedMessage.split(' ');
 
-    // Count how many words match
+    // Count matching words
     let score = 0;
     words.forEach(word => {
       if (cleanedQuestion.includes(word)) score++;
     });
 
-    // Update best match if score is higher
     if (score > highestScore) {
       highestScore = score;
       bestMatch = faq;
@@ -77,6 +79,6 @@ function findAnswer(userMessage) {
     return bestMatch.answer;
   }
 
-  // Fallback response
+  // Fallback if nothing matches
   return "Hello there! 👋 How can I assist you with NextGen Systems’ careers or HR policies today?";
 }

@@ -1,42 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RecruIT – NextGen Systems</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+
   <div class="chat-container">
-    <header class="chat-header">
-      <div class="bot-avatar">
-        <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" alt="Bot Avatar" />
+    <div class="chat-header">
+      <img src="https://cdn-icons-png.flaticon.com/512/4712/4712109.png" class="bot-avatar" alt="Bot Avatar">
+      <div>
+        <h2>RecruIT – NextGen Systems</h2>
+        <span class="status-dot online"></span> <small>Online</small>
       </div>
-      <div class="bot-info">
-        <h2>RecruIT</h2>
-        <p>NextGen Systems • <span class="status-dot"></span> Online</p>
-      </div>
-    </header>
-
-    <div id="chatbox" class="chat-box"></div>
-    
-    <div id="typingIndicator" class="typing hidden">
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
     </div>
 
-    <div class="input-area">
-      <input type="text" id="userInput" placeholder="Ask me about careers, hiring, or jobs..." autocomplete="off" />
+    <div class="chat-box" id="chatBox"></div>
+
+    <div class="typing-indicator" id="typingIndicator">
+      <span></span><span></span><span></span>
+    </div>
+
+    <div class="chat-input">
+      <input type="text" id="userInput" placeholder="Ask me about careers, hiring, or jobs...">
       <button id="sendBtn">Send</button>
-    </div>
-
-    <div class="suggestions">
-      <button class="suggestion">How can I apply?</button>
-      <button class="suggestion">Do I need a degree?</button>
-      <button class="suggestion">Can I apply again?</button>
-      <button class="suggestion">Application status</button>
     </div>
   </div>
 

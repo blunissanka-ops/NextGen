@@ -47,6 +47,7 @@ sendBtn.disabled = true;
 fetch('faqs.json')
   .then(res => res.json())
   .then(data => {
+    // Flatten the nested structure into a single array of questions
     faqsData = data.faqs.flatMap(cat => cat.questions);
     isFaqsLoaded = true;
     sendBtn.disabled = false;
@@ -96,7 +97,7 @@ function findAnswer(userMessage) {
       highestScore = score;
       bestMatch = faq;
     } else if (score === highestScore && score > 0) {
-      // Tie-breaker
+      // Tie-breaker: prefer the match with the shorter original question
       if (bestMatch && faq.question.length < bestMatch.question.length) {
         bestMatch = faq;
       } else if (!bestMatch) {
@@ -122,7 +123,7 @@ function findAnswer(userMessage) {
   return "I'm sorry, I couldn't find a direct answer to your question. Please try rephrasing or ask about common topics like 'jobs', 'application', 'benefits', or 'training'.";
 }
 
-// --- Conversational Logic (Fixes 'hi', 'thanks' failures) ---
+// --- Conversational Logic (Handles simple greetings/acknowledgements) ---
 
 function handleGreetings(userMessage) {
   const cleanedMessage = cleanText(userMessage);
@@ -158,7 +159,18 @@ userInput.addEventListener('keypress', (e) => {
 });
 
 clearBtn.addEventListener('click', () => {
+  // Clear the chat box
   chatBox.innerHTML = '';
+  // Re-add the hidden typing indicator element
+  chatBox.innerHTML = `
+    <div class="message bot typing-indicator" style="display: none;">
+      <div class="typing-animation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>`;
+  // Re-append the initial message
   appendMessage('bot', 'Hello! I am your NextGen HR Assistant. How can I help you today?');
 });
 

@@ -1,283 +1,367 @@
-const chatBox = document.querySelector('.chat-box');
-const userInput = document.querySelector('#user-input');
-const sendBtn = document.querySelector('#send-btn');
-const clearBtn = document.querySelector('#clear-btn');
-const typingIndicator = document.querySelector('.typing-indicator');
+/* style.css (FIXED for Overlap and User Experience + NEW MENU) */
 
-// NEW: Autocomplete elements
-const autocompleteContainer = document.querySelector('.autocomplete-container');
-const suggestionsList = document.querySelector('#suggestions-list');
-
-let faqsData = [];
-let isFaqsLoaded = false;
-const SCORE_THRESHOLD = 3; 
-
-// --- Utility Functions ---
-
-function cleanText(text) {
-  // Clean text: lowercase + remove punctuation
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9\s]/g, '')
-    .trim();
+/* Base Styles */
+body {
+  background: #eaf3ff; 
+  font-family: "Poppins", Arial, sans-serif; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
 }
 
-function appendMessage(sender, text, isTyping = false) {
-  if (isTyping) return;
-
-  const msg = document.createElement('div');
-  msg.classList.add('message', sender);
-  msg.innerHTML = `<p>${text}</p>`;
-  chatBox.appendChild(msg);
-  chatBox.scrollTop = chatBox.scrollHeight;
+/* Chat Container */
+.chat-container {
+  width: 420px; 
+  height: 600px; 
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); 
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.3s ease; /* For smooth fullscreen transition */
 }
 
-function showTypingIndicator(show) {
-  if (show) {
-    typingIndicator.style.display = 'flex';
-  } else {
-    typingIndicator.style.display = 'none';
-  }
-  chatBox.scrollTop = chatBox.scrollHeight;
+/* --- NEW: Fullscreen Style --- */
+.chat-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+    max-width: none;
+    z-index: 9999;
+}
+/* --- END NEW: Fullscreen Style --- */
+
+
+/* Chat Header (Adjusted to accommodate menu) */
+.chat-header {
+  /* Default Theme */
+  background: linear-gradient(135deg, #0078ff, #00b4ff); 
+  color: white;
+  padding: 15px 15px 15px 25px; 
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Aligns content and menu to edges */
+  gap: 10px;
+  position: relative; /* For dropdown positioning */
 }
 
-// --- Chatbot Core Logic ---
+/* --- NEW: Theme Classes --- */
+.chat-header.theme-default {
+    background: linear-gradient(135deg, #0078ff, #00b4ff); /* Original Blue Wave */
+}
+.chat-header.theme-sunset {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Warm Orange/Pink */
+}
+.chat-header.theme-emerald {
+    background: linear-gradient(135deg, #13aa52, #47cf73); /* Green/Emerald */
+}
+/* --- END NEW: Theme Classes --- */
 
-// Load FAQs asynchronously and handle UI state
-appendMessage('bot', '🤖 Initializing HR Chatbot. Please wait, loading knowledge base...');
-sendBtn.disabled = true;
-
-fetch('faqs.json')
-  .then(res => res.json())
-  .then(data => {
-    // Flatten the nested structure into a single array of questions
-    faqsData = data.faqs.flatMap(cat => cat.questions);
-    isFaqsLoaded = true;
-    sendBtn.disabled = false;
-
-    // Remove initial loading message
-    const loadingMessage = chatBox.querySelector('.bot p');
-    if (loadingMessage && loadingMessage.textContent.includes('Initializing HR Chatbot')) {
-      loadingMessage.closest('.message').remove();
-    }
-
-    appendMessage('bot', 'Hello! I am your NextGen HR Assistant. How can I help you today?');
-  })
-  .catch(err => {
-    console.error('Error loading FAQs:', err);
-    appendMessage('bot', 'Error: Could not load FAQ data. Please check the faqs.json file.');
-  });
-
-function findAnswer(userMessage) {
-  if (!isFaqsLoaded) {
-    return 'I am still loading the knowledge base. Please wait a moment before sending a message.';
-  }
-
-  const cleanedMessage = cleanText(userMessage);
-  // Filter out common, short words (like 'i', 'a', 'the')
-  const userWords = cleanedMessage.split(/\s+/).filter(word => word.length > 2);
-
-  // Step 1: Exact Match
-  const exactMatch = faqsData.find(faq => cleanText(faq.question) === cleanedMessage);
-  if (exactMatch) return exactMatch.answer;
-
-  // Step 2: Keyword-based matching
-  let bestMatch = null;
-  let highestScore = 0;
-
-  faqsData.forEach(faq => {
-    let score = 0;
-    const faqKeywords = new Set(faq.keywords);
-
-    // Score based on overlap between user words and FAQ keywords
-    userWords.forEach(word => {
-      if (faqKeywords.has(word)) {
-        score++;
-      }
-    });
-
-    if (score > highestScore) {
-      highestScore = score;
-      bestMatch = faq;
-    } else if (score === highestScore && score > 0) {
-      // Tie-breaker: prefer the match with the shorter original question
-      if (bestMatch && faq.question.length < bestMatch.question.length) {
-        bestMatch = faq;
-      } else if (!bestMatch) {
-        bestMatch = faq;
-      }
-    }
-  });
-
-  const isSingleWordQuery = userWords.length === 1;
-
-  if (bestMatch) {
-    // If it's a single word query (e.g., 'jobs'), accept a score of 1 or more.
-    if (isSingleWordQuery && highestScore >= 1) {
-        return bestMatch.answer;
-    }
-    // Standard threshold for multi-word phrases/sentences
-    if (highestScore >= SCORE_THRESHOLD) {
-        return bestMatch.answer;
-    }
-  }
-
-  // Default fallback
-  return "I'm sorry, I couldn't find a direct answer to your question. Please try rephrasing or ask about common topics like 'jobs', 'application', 'benefits', or 'training'.";
+/* Bot Avatar Styling */
+.bot-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%; 
+  background: white; 
+  padding: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  line-height: 1;
 }
 
-// --- Conversational Logic ---
-
-function handleGreetings(userMessage) {
-  const cleanedMessage = cleanText(userMessage);
-
-  const greetings = ['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'greetings'];
-  const goodbye = ['bye', 'goodbye', 'see ya', 'cya', 'later'];
-  const acknowledgement = ['thank you', 'thanks', 'cheers'];
-
-  if (greetings.some(g => cleanedMessage === g || cleanedMessage.includes(g))) {
-    return 'Hello there! How can I assist you with HR matters today?';
-  }
-
-  if (goodbye.some(g => cleanedMessage === g || cleanedMessage.includes(g))) {
-    return 'Goodbye! Feel free to return if you have any other HR questions.';
-  }
-
-  if (acknowledgement.some(a => cleanedMessage.includes(a))) {
-    return 'You are very welcome! Is there anything else I can help you with?';
-  }
-
-  if (cleanedMessage.includes('how are you')) {
-      return "I'm a bot, but I'm operating perfectly! How can I help you with your HR query?";
-  }
-  
-  return null;
+.bot-avatar::before {
+  content: '🤖'; /* The Robot Emoji */
 }
 
-// --- Autocomplete Functions ---
-
-function filterSuggestions(query) {
-  if (!query || !isFaqsLoaded) return [];
-
-  const cleanedQuery = cleanText(query);
-
-  const matchedQuestions = faqsData.filter(faq => {
-    // Check if the cleaned query is included in the cleaned question text
-    return cleanText(faq.question).includes(cleanedQuery);
-  });
-
-  // Sort by how early the query appears in the question (simple relevance)
-  matchedQuestions.sort((a, b) => {
-    const aIndex = cleanText(a.question).indexOf(cleanedQuery);
-    const bIndex = cleanText(b.question).indexOf(cleanedQuery);
-    return aIndex - bIndex;
-  });
-
-  // Limit to 5 suggestions
-  return matchedQuestions.slice(0, 5).map(faq => faq.question);
+/* --- NEW: Kebab Menu & Dropdown Styles --- */
+.kebab-menu {
+  position: relative;
 }
 
-function renderSuggestions(suggestions) {
-  suggestionsList.innerHTML = '';
-
-  if (suggestions.length === 0) {
-    suggestionsList.style.display = 'none';
-    return;
-  }
-
-  suggestions.forEach(question => {
-    const item = document.createElement('div');
-    item.classList.add('suggestion-item');
-    item.textContent = question;
-    
-    // Handle click to select the suggestion and trigger search
-    item.addEventListener('click', () => {
-      userInput.value = question;
-      suggestionsList.style.display = 'none';
-      userInput.focus();
-      handleUserInput(); // Automatically send the selected question
-    });
-
-    suggestionsList.appendChild(item);
-  });
-
-  suggestionsList.style.display = 'block';
+#menu-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5em;
+  line-height: 1;
+  padding: 0 5px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-weight: 800;
+  transform: translateY(-2px);
 }
 
-function handleInputForSuggestions() {
-  const query = userInput.value.trim();
-  // NEW: Check if query is empty instead of length < 2
-  if (query.length === 0) { 
-    suggestionsList.style.display = 'none';
-    return;
-  }
-
-  const suggestions = filterSuggestions(query);
-  renderSuggestions(suggestions);
+#menu-btn:hover {
+  opacity: 0.8;
 }
 
-// --- Event Handlers (Updated) ---
+.options-dropdown {
+  position: absolute;
+  top: 100%; 
+  right: 0;
+  width: 200px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  z-index: 200; 
+  display: none; 
+  transform: translateY(5px);
+}
 
-sendBtn.addEventListener('click', handleUserInput);
-userInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') handleUserInput();
-});
+.options-dropdown.open {
+  display: block;
+}
 
-// Add the input listener for suggestions
-userInput.addEventListener('input', handleInputForSuggestions);
+.dropdown-section-title {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: #555;
+    margin: 5px 0 5px 5px;
+    padding: 0 5px;
+}
 
-// Add listener to hide suggestions when clicking outside
-document.addEventListener('click', (e) => {
-    if (suggestionsList && autocompleteContainer && !autocompleteContainer.contains(e.target) && suggestionsList.style.display === 'block') {
-        suggestionsList.style.display = 'none';
-    }
-});
+.menu-item {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 5px;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #333;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.menu-item:hover {
+    background-color: #f0f0f0;
+}
+
+.theme-options {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+}
+
+.theme-option {
+    padding: 5px 8px;
+    font-size: 0.8em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s;
+    flex-grow: 1;
+    margin: 0 3px;
+    text-align: center;
+}
+
+.theme-option[data-theme="default"] { background: #007bff; border-color: #007bff; }
+.theme-option[data-theme="sunset"] { background: #ff7e5f; border-color: #ff7e5f; }
+.theme-option[data-theme="emerald"] { background: #13aa52; border-color: #13aa52; }
+
+.theme-option:hover {
+    opacity: 0.8;
+}
+
+/* --- END NEW: Kebab Menu & Dropdown Styles --- */
 
 
-clearBtn.addEventListener('click', () => {
-  // Clear the chat box
-  chatBox.innerHTML = '';
-  // Re-add the hidden typing indicator element
-  chatBox.innerHTML = `
-    <div class="message bot typing-indicator" style="display: none;">
-      <div class="typing-animation">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>`;
-  // Re-append the initial message
-  appendMessage('bot', 'Hello! I am your NextGen HR Assistant. How can I help you today?');
-  suggestionsList.style.display = 'none'; // Ensure suggestions are hidden on clear
-});
+/* Chat Box: Added padding-bottom to prevent suggestions from hiding content */
+.chat-box {
+  flex: 1;
+  padding: 15px;
+  padding-bottom: 20px; 
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
 
-function handleUserInput() {
-  const userMessage = userInput.value.trim();
-  if (!userMessage || !isFaqsLoaded) return; 
+/* Chat Messages */
+.message {
+  margin-bottom: 10px;
+  max-width: 80%;
+  word-wrap: break-word;
+  padding: 10px 15px;
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+}
 
-  // 1. Display user message
-  appendMessage('user', userMessage);
-  userInput.value = '';
-  suggestionsList.style.display = 'none'; // Hide suggestions on send
+.message p {
+  margin: 0;
+}
 
-  // 2. Determine reply (Check for greetings first)
-  let reply = handleGreetings(userMessage);
+.message.user {
+  align-self: flex-end;
+  background-color: #007bff; 
+  color: #fff;
+}
 
-  if (reply === null) {
-    reply = findAnswer(userMessage);
+.message.bot {
+  align-self: flex-start;
+  background-color: #f1f1f1;
+  color: #333;
+}
+
+/* Input Container: Holds all elements at the bottom */
+.input-container {
+  display: flex; 
+  padding: 10px;
+  background: #f2f6fa; 
+  border-top: 1px solid #ccc;
+  gap: 8px; 
+}
+
+/* Autocomplete Container: Takes full width and provides relative context */
+.autocomplete-container {
+  flex: 1; 
+  position: relative; 
+}
+
+/* User Input Field */
+.input-container input {
+  width: 100%; 
+  border: 1px solid #ccc; 
+  outline: none;
+  padding: 10px;
+  border-radius: 20px; 
+  font-size: 14px;
+  margin: 0;
+  box-sizing: border-box; 
+  z-index: 110; 
+}
+
+/* Suggestions List: Positioned directly above the input */
+.suggestions-list {
+  position: absolute;
+  bottom: 50px; /* Positions it correctly above the input field */
+  left: 0;
+  right: 0;
+  max-height: 180px; 
+  overflow-y: auto;
+  z-index: 100; 
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 10px 10px 0 0;
+  box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.15);
+  display: none; 
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.suggestion-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  font-size: 0.9em;
+  color: #333;
+  border-bottom: 1px solid #eee;
+}
+
+.suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.suggestion-item:hover {
+  background-color: #e6f0ff; 
+  color: #007bff;
+}
+
+/* Button Styles */
+.input-container button {
+  padding: 10px 18px; 
+  border-radius: 20px; 
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-weight: 600; 
+  transition: background-color 0.2s;
+}
+
+#send-btn {
+  background-color: #007bff;
+}
+
+#send-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+#send-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+#clear-btn {
+  background-color: #dc3545; 
+}
+
+#clear-btn:hover {
+  background-color: #c82333;
+}
+
+
+/* Typing Indicator Styles */
+.typing-indicator {
+  align-self: flex-start; 
+  background-color: #f1f1f1;
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 15px;
+  max-width: 100px; 
+}
+
+.typing-animation {
+  display: flex;
+  align-items: center;
+  height: 10px; 
+}
+
+.typing-animation span {
+  display: block;
+  width: 6px;
+  height: 6px;
+  background-color: #333;
+  border-radius: 50%;
+  margin-right: 5px;
+  opacity: 0;
+  animation: typing-dot 1s infinite;
+}
+
+.typing-animation span:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.typing-animation span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-animation span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing-dot {
+  0%, 80%, 100% {
+    transform: translateY(0);
+    opacity: 0;
   }
-
-  // 3. Show typing indicator and disable button
-  showTypingIndicator(true);
-  sendBtn.disabled = true;
-
-  // 4. Delay response for UX
-  setTimeout(() => {
-    // 5. Hide typing indicator and enable send button
-    showTypingIndicator(false);
-    sendBtn.disabled = false;
-
-    // 6. Display bot reply
-    appendMessage('bot', reply);
-  }, 800); 
+  40% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
 }

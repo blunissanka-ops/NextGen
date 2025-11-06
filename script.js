@@ -160,3 +160,58 @@ function handleUserInput() {
     appendMessage('bot', reply);
   }, 800); // 800ms delay for a natural, human-like response time
 }
+// --- New Function: Handle Simple Greetings/Acknowlegements ---
+function handleGreetings(userMessage) {
+    const cleanedMessage = cleanText(userMessage);
+
+    // List of accepted greetings/acknowledgements
+    const greetings = [
+        'hi', 'hello', 'hey', 'good morning', 'good afternoon', 'greetings'
+    ];
+    const acknowledgement = [
+        'thank you', 'thanks', 'cheers'
+    ];
+
+    if (greetings.some(g => cleanedMessage.includes(g))) {
+        // Return a conversational response
+        return 'Hello there! How can I assist you with HR matters today?';
+    }
+
+    if (acknowledgement.some(a => cleanedMessage.includes(a))) {
+        // Return a conversational response
+        return 'You are very welcome! Is there anything else I can help you with?';
+    }
+
+    // Return null if no greeting or acknowledgement is found, prompting the main FAQ search
+    return null;
+}
+
+// ... existing functions (appendMessage, showTypingIndicator, etc.) ...
+
+// --- Modified handleUserInput Function ---
+function handleUserInput() {
+    const userMessage = userInput.value.trim();
+    if (!userMessage || !isFaqsLoaded) return;
+
+    appendMessage('user', userMessage);
+    userInput.value = '';
+
+    // Step 1: Check for simple greetings/acknowledgements first
+    let reply = handleGreetings(userMessage);
+    
+    // Step 2: If it's not a greeting, proceed to the main FAQ search
+    if (reply === null) {
+        reply = findAnswer(userMessage);
+    }
+    
+    // 3. Show typing indicator and disable button
+    showTypingIndicator(true);
+    sendBtn.disabled = true;
+
+    // 4. Delay response and display it
+    setTimeout(() => {
+        showTypingIndicator(false);
+        sendBtn.disabled = false;
+        appendMessage('bot', reply);
+    }, 800);
+}

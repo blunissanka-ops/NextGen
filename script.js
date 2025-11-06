@@ -6,7 +6,7 @@ const typingIndicator = document.querySelector('.typing-indicator');
 
 let faqsData = [];
 let isFaqsLoaded = false;
-const SCORE_THRESHOLD = 3; // Minimum score required for a confident answer
+const SCORE_THRESHOLD = 3; // Minimum score required for a confident multi-word answer
 
 // --- Utility Functions ---
 
@@ -35,6 +35,7 @@ function showTypingIndicator(show) {
   } else {
     typingIndicator.style.display = 'none';
   }
+  // This ensures the typing indicator is visible at the bottom
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
@@ -89,14 +90,12 @@ function findAnswer(userMessage) {
 
     // Score based on overlap between user words and FAQ keywords
     userWords.forEach(word => {
-      // Check if a word from the user's message is in the FAQ's keywords list
       if (faqKeywords.has(word)) {
         score++;
       }
     });
 
     if (score > highestScore) {
-      // New highest score found
       highestScore = score;
       bestMatch = faq;
     } else if (score === highestScore && score > 0) {
@@ -104,25 +103,35 @@ function findAnswer(userMessage) {
       if (bestMatch && faq.question.length < bestMatch.question.length) {
         bestMatch = faq;
       } else if (!bestMatch) {
-        bestMatch = faq; // Handle the first match if it ties
+        bestMatch = faq;
       }
     }
   });
 
-  if (bestMatch && highestScore >= SCORE_THRESHOLD) {
-    return bestMatch.answer;
+  const isSingleWordQuery = userWords.length === 1;
+
+  if (bestMatch) {
+    // If it's a single word query (like 'jobs'), accept a score of 1 or more.
+    if (isSingleWordQuery && highestScore >= 1) {
+        return bestMatch.answer;
+    }
+    // Otherwise, use the standard threshold for full sentences/phrases
+    if (highestScore >= SCORE_THRESHOLD) {
+        return bestMatch.answer;
+    }
   }
+
 
   // Default fallback if score is too low or no match found
   return "I'm sorry, I couldn't find a direct answer to your question. Please try rephrasing or ask about common topics like 'jobs', 'application', 'benefits', or 'training'.";
 }
 
-// --- New Conversational Logic for Greetings and Common Phrases ---
+// --- Conversational Logic for Greetings and Common Phrases ---
 
 function handleGreetings(userMessage) {
   const cleanedMessage = cleanText(userMessage);
 
-  // List of accepted greetings
+  // List of accepted greetings (including single words)
   const greetings = [
     'hi', 'hello', 'hey', 'good morning', 'good afternoon', 'greetings'
   ];
@@ -155,7 +164,6 @@ function handleGreetings(userMessage) {
       return "I'm a bot, but I'm operating perfectly! How can I help you with your HR query?";
   }
   
-  // Return null if no conversational phrase is found, prompting the main FAQ search
   return null;
 }
 
@@ -174,10 +182,10 @@ clearBtn.addEventListener('click', () => {
   appendMessage('bot', 'Hello! I am your NextGen HR Assistant. How can I help you today?');
 });
 
-// Send user message (MODIFIED to include greeting check)
+// Send user message
 function handleUserInput() {
   const userMessage = userInput.value.trim();
-  if (!userMessage || !isFaqsLoaded) return; // Prevents sending if empty or not loaded
+  if (!userMessage || !isFaqsLoaded) return; 
 
   // 1. Display user message
   appendMessage('user', userMessage);
@@ -203,5 +211,5 @@ function handleUserInput() {
 
     // 6. Display bot reply
     appendMessage('bot', reply);
-  }, 800); // 800ms delay for a natural, human-like response time
+  }, 800); 
 }

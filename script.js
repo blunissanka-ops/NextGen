@@ -41,8 +41,7 @@ function showTypingIndicator(show) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// --- Chatbot Core Logic (Unchanged) ---
-// ... (Your existing logic for loading faqs.json and findAnswer) ...
+// --- Chatbot Core Logic ---
 
 // Load FAQs asynchronously and handle UI state
 appendMessage('bot', '🤖 Initializing HR Chatbot. Please wait, loading knowledge base...');
@@ -127,7 +126,7 @@ function findAnswer(userMessage) {
   return "I'm sorry, I couldn't find a direct answer to your question. Please try rephrasing or ask about common topics like 'jobs', 'application', 'benefits', or 'training'.";
 }
 
-// --- Conversational Logic (Unchanged) ---
+// --- Conversational Logic ---
 
 function handleGreetings(userMessage) {
   const cleanedMessage = cleanText(userMessage);
@@ -155,7 +154,7 @@ function handleGreetings(userMessage) {
   return null;
 }
 
-// --- NEW: Autocomplete Functions ---
+// --- Autocomplete Functions ---
 
 function filterSuggestions(query) {
   if (!query || !isFaqsLoaded) return [];
@@ -207,7 +206,8 @@ function renderSuggestions(suggestions) {
 
 function handleInputForSuggestions() {
   const query = userInput.value.trim();
-  if (query.length < 2) { // Start suggesting after 2 characters
+  // NEW: Check if query is empty instead of length < 2
+  if (query.length === 0) { 
     suggestionsList.style.display = 'none';
     return;
   }
@@ -223,12 +223,12 @@ userInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') handleUserInput();
 });
 
-// NEW: Add the input listener for suggestions
+// Add the input listener for suggestions
 userInput.addEventListener('input', handleInputForSuggestions);
 
-// NEW: Add listener to hide suggestions when clicking outside
+// Add listener to hide suggestions when clicking outside
 document.addEventListener('click', (e) => {
-    if (!autocompleteContainer.contains(e.target) && suggestionsList.style.display === 'block') {
+    if (suggestionsList && autocompleteContainer && !autocompleteContainer.contains(e.target) && suggestionsList.style.display === 'block') {
         suggestionsList.style.display = 'none';
     }
 });

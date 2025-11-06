@@ -1,4 +1,4 @@
-/* style.css (Corrected and Consolidated) */
+/* style.css (Complete and Final) */
 
 /* Base Styles */
 body {
@@ -23,10 +23,6 @@ body {
   overflow: hidden;
 }
 
-/* style.css (Relevant Snippet for Avatar) */
-
-/* ... (rest of the file content) ... */
-
 /* Chat Header */
 .chat-header {
   background: linear-gradient(135deg, #0078ff, #00b4ff); 
@@ -41,24 +37,22 @@ body {
   gap: 10px;
 }
 
+/* Bot Avatar Styling */
 .bot-avatar {
-  /* This ensures the image is displayed correctly */
   width: 40px;
   height: 40px;
   border-radius: 50%; /* Makes the image circular */
-  background: white; /* Fallback background */
+  background: white; /* Provides a white background if the image is transparent */
   padding: 4px;
 }
-
-/* ... (rest of the file content) ... */
 
 /* Chat Box */
 .chat-box {
   flex: 1;
   padding: 15px;
-  overflow-y: auto; /* Handles message scrolling */
+  overflow-y: auto;
   display: flex;
-  flex-direction: column; /* Messages stack from top to bottom */
+  flex-direction: column;
   gap: 10px;
 }
 
@@ -141,7 +135,6 @@ body {
 
 /* Typing Indicator Styles */
 .typing-indicator {
-  /* Aligns with other bot messages */
   align-self: flex-start; 
   background-color: #f1f1f1;
   color: #333;

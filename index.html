@@ -10,17 +10,22 @@
 <body>
   <div class="chat-wrapper">
     <div class="chat-container">
+      
+      <!-- Chat Header -->
       <header class="chat-header">
         <div class="bot-avatar"></div>
         <span>NextGen HR Assistant</span>
+        <input type="color" id="color-picker" title="Change bot color">
       </header>
 
+      <!-- Chat Messages -->
       <main class="chat-box">
         <div class="message bot typing-indicator" style="display:none;">
           <div class="typing-animation"><span></span><span></span><span></span></div>
         </div>
       </main>
 
+      <!-- Input Section -->
       <footer class="input-container">
         <input type="text" id="user-input" placeholder="Ask your HR question..." autocomplete="off" />
         <button id="send-btn">Send</button>

@@ -3,20 +3,21 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NextGen Systems — HR Assistant</title>
+  <title>NextGen HR Assistant</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Floating launcher (visible when minimized) -->
+  <!-- Floating launcher -->
   <button id="chat-launcher" class="chat-launcher" aria-label="Open chat" title="Open chat">
     <svg viewBox="0 0 24 24" class="launcher-icon" fill="currentColor" aria-hidden="true">
       <path d="M12 2a10 10 0 100 20 10 10 0 000-20zM8 10h8v2H8v-2zm0-4h8v2H8V6z"/>
     </svg>
   </button>
 
-  <div class="chat-wrapper" id="chat-wrapper" aria-hidden="false">
-    <div class="chat-widget" id="chat-widget" role="dialog" aria-label="HR Chatbot">
+  <!-- Chat wrapper -->
+  <div id="chat-wrapper" class="chat-wrapper">
+    <div id="chat-widget" class="chat-widget" role="dialog" aria-label="HR Chatbot">
       <header class="chat-header">
         <div class="brand">
           <div class="bot-avatar" aria-hidden="true">
@@ -40,6 +41,14 @@
             </select>
             <input type="color" id="custom-color" title="Pick custom color" />
           </div>
+
+          <div class="mode-controls">
+            <label class="toggle">
+              <input id="dark-toggle" type="checkbox" />
+              <span class="toggle-slider" title="Toggle dark mode" aria-hidden="true"></span>
+            </label>
+          </div>
+
           <div class="actions">
             <button id="minimize-btn" class="icon-btn" title="Minimize chat" aria-label="Minimize">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 12h12v2H6z"/></svg>
@@ -52,9 +61,10 @@
       </header>
 
       <main class="chat-body">
-        <div class="chat-messages" id="chat-box" role="log" aria-live="polite"></div>
+        <div id="chat-box" class="chat-messages" role="log" aria-live="polite"></div>
 
-        <div class="suggestions" id="suggestions" aria-hidden="true"></div>
+        <!-- suggestions below messages but above input -->
+        <div id="suggestions" class="suggestions" aria-hidden="true"></div>
       </main>
 
       <footer class="chat-footer">

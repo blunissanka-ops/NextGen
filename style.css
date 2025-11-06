@@ -1,4 +1,4 @@
-/* style.css (FIXED for Overlap and User Experience) */
+/* style.css (FIXED for Overlap and User Experience + NEW MENU) */
 
 /* Base Styles */
 body {
@@ -21,21 +21,51 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: all 0.3s ease; /* For smooth fullscreen transition */
 }
 
-/* Chat Header */
+/* --- NEW: Fullscreen Style --- */
+.chat-container.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+    max-width: none;
+    z-index: 9999;
+}
+/* --- END NEW: Fullscreen Style --- */
+
+
+/* Chat Header (Adjusted to accommodate menu) */
 .chat-header {
+  /* Default Theme */
   background: linear-gradient(135deg, #0078ff, #00b4ff); 
   color: white;
-  padding: 15px;
+  padding: 15px 15px 15px 25px; 
   text-align: center;
   font-size: 1.2em;
   font-weight: 600;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between; /* Aligns content and menu to edges */
   gap: 10px;
+  position: relative; /* For dropdown positioning */
 }
+
+/* --- NEW: Theme Classes --- */
+.chat-header.theme-default {
+    background: linear-gradient(135deg, #0078ff, #00b4ff); /* Original Blue Wave */
+}
+.chat-header.theme-sunset {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Warm Orange/Pink */
+}
+.chat-header.theme-emerald {
+    background: linear-gradient(135deg, #13aa52, #47cf73); /* Green/Emerald */
+}
+/* --- END NEW: Theme Classes --- */
 
 /* Bot Avatar Styling */
 .bot-avatar {
@@ -55,11 +85,107 @@ body {
   content: '🤖'; /* The Robot Emoji */
 }
 
+/* --- NEW: Kebab Menu & Dropdown Styles --- */
+.kebab-menu {
+  position: relative;
+}
+
+#menu-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5em;
+  line-height: 1;
+  padding: 0 5px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-weight: 800;
+  transform: translateY(-2px);
+}
+
+#menu-btn:hover {
+  opacity: 0.8;
+}
+
+.options-dropdown {
+  position: absolute;
+  top: 100%; 
+  right: 0;
+  width: 200px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  z-index: 200; 
+  display: none; 
+  transform: translateY(5px);
+}
+
+.options-dropdown.open {
+  display: block;
+}
+
+.dropdown-section-title {
+    font-size: 0.8em;
+    font-weight: 600;
+    color: #555;
+    margin: 5px 0 5px 5px;
+    padding: 0 5px;
+}
+
+.menu-item {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 5px;
+    text-align: left;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #333;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.menu-item:hover {
+    background-color: #f0f0f0;
+}
+
+.theme-options {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+}
+
+.theme-option {
+    padding: 5px 8px;
+    font-size: 0.8em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    transition: all 0.2s;
+    flex-grow: 1;
+    margin: 0 3px;
+    text-align: center;
+}
+
+.theme-option[data-theme="default"] { background: #007bff; border-color: #007bff; }
+.theme-option[data-theme="sunset"] { background: #ff7e5f; border-color: #ff7e5f; }
+.theme-option[data-theme="emerald"] { background: #13aa52; border-color: #13aa52; }
+
+.theme-option:hover {
+    opacity: 0.8;
+}
+
+/* --- END NEW: Kebab Menu & Dropdown Styles --- */
+
+
 /* Chat Box: Added padding-bottom to prevent suggestions from hiding content */
 .chat-box {
   flex: 1;
   padding: 15px;
-  padding-bottom: 20px; /* Ensure space for the suggestions list above the input */
+  padding-bottom: 20px; 
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -93,8 +219,6 @@ body {
   color: #333;
 }
 
-/* --- Input Bar and Suggestion Fixes --- */
-
 /* Input Container: Holds all elements at the bottom */
 .input-container {
   display: flex; 
@@ -107,7 +231,7 @@ body {
 /* Autocomplete Container: Takes full width and provides relative context */
 .autocomplete-container {
   flex: 1; 
-  position: relative; /* CRITICAL: For positioning the suggestions list */
+  position: relative; 
 }
 
 /* User Input Field */
@@ -118,7 +242,6 @@ body {
   padding: 10px;
   border-radius: 20px; 
   font-size: 14px;
-  /* Resetting margin/padding to ensure proper alignment */
   margin: 0;
   box-sizing: border-box; 
   z-index: 110; 
@@ -127,9 +250,7 @@ body {
 /* Suggestions List: Positioned directly above the input */
 .suggestions-list {
   position: absolute;
-  /* CRITICAL FIX: The height of the input is approx 40px, plus 10px padding from .input-container.
-     This calculation places it exactly at the top of the input field. */
-  bottom: 50px; /* 40px (input height) + 10px (input-container padding) = 50px */
+  bottom: 50px; /* Positions it correctly above the input field */
   left: 0;
   right: 0;
   max-height: 180px; 
@@ -137,7 +258,6 @@ body {
   z-index: 100; 
   background: white;
   border: 1px solid #ccc;
-  /* Rounded corners at the top only */
   border-radius: 10px 10px 0 0;
   box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.15);
   display: none; 
@@ -162,8 +282,6 @@ body {
   background-color: #e6f0ff; 
   color: #007bff;
 }
-/* --- End Input Bar and Suggestion Fixes --- */
-
 
 /* Button Styles */
 .input-container button {

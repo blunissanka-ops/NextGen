@@ -6,7 +6,7 @@ const typingIndicator = document.querySelector('.typing-indicator');
 
 let faqsData = [];
 let isFaqsLoaded = false;
-const SCORE_THRESHOLD = 3; // Minimum score for a multi-word answer
+const SCORE_THRESHOLD = 3; // Minimum score for a confident multi-word answer
 
 // --- Utility Functions ---
 
@@ -34,7 +34,7 @@ function showTypingIndicator(show) {
   } else {
     typingIndicator.style.display = 'none';
   }
-  // Scroll to the bottom to show the indicator
+  // This ensures the typing indicator is visible at the bottom
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
@@ -118,12 +118,11 @@ function findAnswer(userMessage) {
     }
   }
 
-
   // Default fallback
   return "I'm sorry, I couldn't find a direct answer to your question. Please try rephrasing or ask about common topics like 'jobs', 'application', 'benefits', or 'training'.";
 }
 
-// --- Conversational Logic ---
+// --- Conversational Logic (Fixes 'hi', 'thanks' failures) ---
 
 function handleGreetings(userMessage) {
   const cleanedMessage = cleanText(userMessage);
@@ -182,7 +181,7 @@ function handleUserInput() {
   showTypingIndicator(true);
   sendBtn.disabled = true;
 
-  // 4. Find answer and delay response
+  // 4. Delay response for UX
   setTimeout(() => {
     // 5. Hide typing indicator and enable send button
     showTypingIndicator(false);

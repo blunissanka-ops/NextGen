@@ -1,157 +1,409 @@
-// --- DOM Elements ---
-const chatBox = document.querySelector('.chat-box');
-const userInput = document.querySelector('#user-input');
-const sendBtn = document.querySelector('#send-btn');
-const clearBtn = document.querySelector('#clear-btn');
-const typingIndicator = document.querySelector('.typing-indicator');
-const colorPicker = document.querySelector('#color-picker');
+/* NextGen HR Chatbot - advanced client-side version
+   Features:
+   - Semantic scoring using token + bigram overlap + weighted fields
+   - Live suggestions (top 5) while typing
+   - Theme selection with predefined gradients + custom color
+   - Minimize / maximize with launcher
+   - LocalStorage for chat, theme, collapsed state
+*/
 
-let faqsData = [];
-let isLoaded = false;
+/* ---------------- DOM ---------------- */
+const launcherBtn = document.getElementById('chat-launcher');
+const chatWrapper = document.getElementById('chat-wrapper');
+const chatWidget = document.getElementById('chat-widget');
+const chatBox = document.getElementById('chat-box');
+const userInput = document.getElementById('user-input');
+const sendBtn = document.getElementById('send-btn');
+const clearBtn = document.getElementById('clear-btn');
+const suggestionsEl = document.getElementById('suggestions');
+const themeSelect = document.getElementById('theme-select');
+const customColor = document.getElementById('custom-color');
+const minimizeBtn = document.getElementById('minimize-btn');
+const closeBtn = document.getElementById('close-btn');
+const saveNote = document.getElementById('save-note');
 
-// --- Utility Functions ---
-function cleanText(txt) {
-  return txt.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+let faqs = [];
+let loaded = false;
+
+/* ---------------- Utilities ---------------- */
+const nowTime = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+const clean = txt => txt.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
+const tokenize = txt => {
+  const t = clean(txt);
+  if (!t) return [];
+  const words = t.split(' ').filter(Boolean);
+  // include bigrams as tokens for context
+  const bigrams = [];
+  for (let i=0;i<words.length-1;i++) bigrams.push(words[i] + ' ' + words[i+1]);
+  return words.concat(bigrams);
+};
+const unique = arr => Array.from(new Set(arr));
+
+/* Build a simple weighted vector from faq item */
+function buildFaqVector(faq) {
+  // tokens from question, keywords, and answer with weights
+  const qTokens = tokenize(faq.question);
+  const kTokens = (faq.keywords || []).map(k => clean(k)).flatMap(t => t.split(/\s+/));
+  const aTokens = tokenize(faq.answer);
+  // weights: question=0.6, keywords=0.9, answer=0.25
+  const vec = {};
+  qTokens.forEach(t => vec[t] = (vec[t] || 0) + 0.6);
+  kTokens.forEach(t => vec[t] = (vec[t] || 0) + 0.9);
+  aTokens.forEach(t => vec[t] = (vec[t] || 0) + 0.25);
+  return vec;
 }
-function timestamp() {
-  return new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+/* cosine similarity between two vectors */
+function cosineSim(vecA, vecB) {
+  let dot = 0, magA = 0, magB = 0;
+  for (const k in vecA) { magA += vecA[k]*vecA[k]; }
+  for (const k in vecB) { magB += vecB[k]*vecB[k]; }
+  for (const k in vecA) {
+    if (vecB[k]) dot += vecA[k]*vecB[k];
+  }
+  magA = Math.sqrt(magA); magB = Math.sqrt(magB);
+  if (magA === 0 || magB === 0) return 0;
+  return dot / (magA * magB);
 }
-function appendMessage(sender, text) {
-  const msg = document.createElement('div');
-  msg.classList.add('message', sender);
-  msg.innerHTML = `<p>${text}</p><span class="timestamp">${timestamp()}</span>`;
-  chatBox.appendChild(msg);
+
+/* Precompute vectors for faqs */
+let faqVectors = [];
+function prepareFaqVectors() {
+  faqVectors = faqs.map(f => ({ faq: f, vec: buildFaqVector(f) }));
+}
+
+/* Create user query vector */
+function buildQueryVector(text) {
+  const tokens = tokenize(text);
+  const vec = {};
+  tokens.forEach(t => vec[t] = (vec[t] || 0) + 1.0);
+  // boost single-word queries by value to prefer exact matches sometimes
+  return vec;
+}
+
+/* find best match (semantic) */
+function findBestMatch(text) {
+  const qVec = buildQueryVector(text);
+  let best = null, bestScore = 0;
+  for (const item of faqVectors) {
+    const score = cosineSim(qVec, item.vec);
+    if (score > bestScore) {
+      bestScore = score;
+      best = item.faq;
+    }
+  }
+  return { best, score: bestScore };
+}
+
+/* get top-k suggestions for partial typing */
+function getTopKSuggests(text, k=5) {
+  if (!text || !text.trim()) return [];
+  const qVec = buildQueryVector(text);
+  const scored = faqVectors.map(item => ({ faq: item.faq, score: cosineSim(qVec, item.vec) }));
+  scored.sort((a,b)=>b.score-a.score);
+  return scored.slice(0,k).filter(s => s.score>0).map(s => ({ question: s.faq.question, score: s.score, faq: s.faq }));
+}
+
+/* ---------------- UI helpers ---------------- */
+function appendMessage(sender, text, meta='') {
+  const wrapper = document.createElement('div');
+  wrapper.className = `message ${sender}`;
+  const p = document.createElement('p');
+  p.textContent = text;
+  const m = document.createElement('div');
+  m.className = 'meta';
+  m.textContent = meta || nowTime();
+  wrapper.appendChild(p);
+  wrapper.appendChild(m);
+  chatBox.appendChild(wrapper);
   chatBox.scrollTop = chatBox.scrollHeight;
   saveChat();
 }
-function showTyping(show) {
-  typingIndicator.style.display = show ? 'flex' : 'none';
-  chatBox.scrollTop = chatBox.scrollHeight;
+
+function showSuggestions(list) {
+  suggestionsEl.innerHTML = '';
+  if (!list || list.length===0) {
+    suggestionsEl.style.display = 'none';
+    suggestionsEl.setAttribute('aria-hidden','true');
+    return;
+  }
+  suggestionsEl.style.display = 'block';
+  suggestionsEl.setAttribute('aria-hidden','false');
+  const container = document.createElement('div');
+  container.className = 'suggestion-list';
+  list.forEach(item => {
+    const chip = document.createElement('button');
+    chip.className = 'suggestion';
+    chip.type = 'button';
+    // show question text and subtle score (not necessary but helpful)
+    chip.innerText = item.question;
+    chip.onclick = () => {
+      // fill input and trigger answer
+      userInput.value = item.question;
+      userInput.focus();
+      // optionally auto-send (we choose to show answer when clicked)
+      handleSend(true, item.faq);
+    };
+    container.appendChild(chip);
+  });
+  suggestionsEl.appendChild(container);
 }
+
+/* ---------------- Data loading ---------------- */
+function loadFaqs() {
+  return fetch('faqs.json')
+    .then(r => r.json())
+    .then(data => {
+      faqs = data.faqs.flatMap(c => c.questions);
+      prepareFaqVectors();
+      loaded = true;
+    })
+    .catch(e => {
+      console.error('Failed to load faqs.json', e);
+      appendMessage('bot', '⚠️ Error loading knowledge base. Please ensure faqs.json is available.');
+    });
+}
+
+/* ---------------- Chat persistence ---------------- */
 function saveChat() {
-  localStorage.setItem('chatHistory', chatBox.innerHTML);
+  localStorage.setItem('ng_chat_history', chatBox.innerHTML);
 }
 function loadChat() {
-  const saved = localStorage.getItem('chatHistory');
-  if (saved) chatBox.innerHTML = saved;
+  const html = localStorage.getItem('ng_chat_history');
+  if (html) chatBox.innerHTML = html;
+}
+function clearChat() {
+  localStorage.removeItem('ng_chat_history');
+  chatBox.innerHTML = '';
+  appendMessage('bot','Hello! I am your NextGen HR Assistant. How can I help you today?');
 }
 
-// --- Theme Color ---
-function setBotColor(color) {
-  document.documentElement.style.setProperty('--bot-color', color);
-  document.documentElement.style.setProperty('--bot-gradient', `linear-gradient(135deg, ${color}, ${lightenColor(color, 40)})`);
-  localStorage.setItem('botColor', color);
-  colorPicker.value = color;
-}
-function lightenColor(color, percent) {
-  const num = parseInt(color.replace("#",""),16),
-  amt = Math.round(2.55 * percent),
-  R = (num >> 16) + amt,
-  G = (num >> 8 & 0x00FF) + amt,
-  B = (num & 0x0000FF) + amt;
-  return "#" + (
-    0x1000000 +
-    (R<255?R<1?0:R:255)*0x10000 +
-    (G<255?G<1?0:G:255)*0x100 +
-    (B<255?B<1?0:B:255)
-  ).toString(16).slice(1);
-}
-const savedColor = localStorage.getItem('botColor') || '#0078ff';
-setBotColor(savedColor);
-colorPicker.addEventListener('input', e => setBotColor(e.target.value));
+/* ---------------- Theme & state ---------------- */
+const themes = {
+  blue: { a:'#0078ff', b:'#00b4ff' },
+  mint: { a:'#00bfa6', b:'#22c1a1' },
+  purple: { a:'#7b61ff', b:'#c56fff' },
+  sunset: { a:'#ff7a7a', b:'#ffb56b' }
+};
 
-// --- Fuzzy Similarity Search ---
-function similarity(a, b) {
-  const A = new Set(cleanText(a).split(/\s+/));
-  const B = new Set(cleanText(b).split(/\s+/));
-  const intersect = new Set([...A].filter(x => B.has(x)));
-  return intersect.size / Math.sqrt(A.size * B.size);
+function applyThemeByName(name) {
+  if (name === 'custom') {
+    const c = localStorage.getItem('ng_custom_color') || '#0078ff';
+    setPrimaryFromColor(c);
+    themeSelect.value = 'custom';
+    customColor.value = c;
+    return;
+  }
+  const t = themes[name] || themes.blue;
+  document.documentElement.style.setProperty('--primary-1', t.a);
+  document.documentElement.style.setProperty('--primary-2', t.b);
+  localStorage.setItem('ng_theme', name);
+  // also persist custom color to default if user selects later
+}
+function setPrimaryFromColor(hex) {
+  // compute a lighter/two-tone pair
+  const light = lighten(hex, 36);
+  document.documentElement.style.setProperty('--primary-1', hex);
+  document.documentElement.style.setProperty('--primary-2', light);
+  localStorage.setItem('ng_custom_color', hex);
+  localStorage.setItem('ng_theme', 'custom');
 }
 
-// --- Greeting Logic ---
-function handleGreeting(msg) {
-  const t = cleanText(msg);
-  if (['hi','hello','hey','good morning','good afternoon'].some(w=>t.includes(w))) return "Hello! How can I assist you with HR matters today?";
-  if (['thank','thanks'].some(w=>t.includes(w))) return "You're very welcome! Anything else I can help you with?";
-  if (['bye','goodbye','see you'].some(w=>t.includes(w))) return "Goodbye! Have a great day ahead.";
-  if (t.includes('how are you')) return "I'm fully operational! How can I support your HR query?";
-  return null;
+/* color helper: lighten hex by percent */
+function lighten(hex, percent) {
+  const num = parseInt(hex.replace('#',''),16);
+  const amt = Math.round(2.55 * percent);
+  let R = (num >> 16) + amt, G = (num >> 8 & 0x00FF) + amt, B = (num & 0x0000FF) + amt;
+  R = Math.max(0, Math.min(255,R)); G = Math.max(0, Math.min(255,G)); B = Math.max(0, Math.min(255,B));
+  return '#' + ( (1<<24) + (R<<16) + (G<<8) + B ).toString(16).slice(1);
 }
-function findAnswer(msg) {
-  const t = cleanText(msg);
-  const words = t.split(/\s+/);
-  const isShortQuery = words.length <= 2;
 
-  // Quick routing by keywords
-  const lower = t.toLowerCase();
-  if (isShortQuery) {
-    if (/(job|jobs|apply|career)/.test(lower)) {
-      const jobFaq = faqsData.find(f => f.question.toLowerCase().includes("apply for a job"));
-      if (jobFaq) return jobFaq.answer;
-    }
-    if (/(qualification|degree|requirements|education)/.test(lower)) {
-      const reqFaq = faqsData.find(f => f.question.toLowerCase().includes("qualifications"));
-      if (reqFaq) return reqFaq.answer;
-    }
-    if (/(interview|call|feedback|status)/.test(lower)) {
-      const intFaq = faqsData.find(f => f.question.toLowerCase().includes("interview"));
-      if (intFaq) return intFaq.answer;
+/* ---------------- Interaction handlers ---------------- */
+let typingTimer = null;
+userInput.addEventListener('input', (e) => {
+  const text = e.target.value;
+  if (!loaded) return;
+  // debounce suggestions
+  clearTimeout(typingTimer);
+  typingTimer = setTimeout(() => {
+    const suggestions = getTopKSuggests(text, 5);
+    showSuggestions(suggestions);
+  }, 200);
+});
+
+function handleSend(fromSuggestion = false, directFaq = null) {
+  const text = userInput.value.trim();
+  if (!text && !directFaq) return;
+  // if directFaq provided (when user clicks suggestion), use it
+  if (directFaq) {
+    appendMessage('user', directFaq.question);
+    appendMessage('bot', directFaq.answer);
+    userInput.value = '';
+    showSuggestions([]);
+    return;
+  }
+
+  appendMessage('user', text);
+  userInput.value = '';
+  showSuggestions([]);
+
+  // if short query, try early routing (common intents)
+  const t = clean(text);
+  let reply = null;
+  // greeting detection
+  if (/(^|\s)(hi|hello|hey|good morning|good afternoon)(\s|$)/.test(t)) {
+    reply = 'Hello! How can I assist you with HR matters today?';
+  } else if (/(^|\s)(thanks|thank you|cheers)(\s|$)/.test(t)) {
+    reply = "You're welcome! Anything else I can help with?";
+  }
+
+  if (reply) {
+    appendMessage('bot', reply);
+    return;
+  }
+
+  // use semantic matching
+  const { best, score } = findBestMatch(text);
+
+  // if the best score is low, try fallback routing by common keywords
+  if (!best || score < 0.12) {
+    // basic routing
+    if (/(job|jobs|apply|career)/.test(t)) {
+      // find FAQ most related to "apply for a job"
+      const candidate = faqs.find(f => /apply for a job/i.test(f.question));
+      if (candidate) reply = candidate.answer;
+    } else if (/(interview|feedback|schedule|called)/.test(t)) {
+      const candidate = faqs.find(f => /interview/i.test(f.question));
+      if (candidate) reply = candidate.answer;
+    } else if (/(status|application status|my application)/.test(t)) {
+      const candidate = faqs.find(f => /current status of my job application/i.test(f.question) || /application status/i.test(f.question));
+      if (candidate) reply = candidate.answer;
     }
   }
 
-  // Fuzzy match for normal queries
-  let best = null, bestScore = 0;
-  faqsData.forEach(faq => {
-    const combined = faq.question + ' ' + faq.keywords.join(' ');
-    const score = similarity(t, combined);
-    if (score > bestScore) { bestScore = score; best = faq; }
-  });
+  if (!reply && best) {
+    // use best match
+    reply = best.answer;
+  }
 
-  if (best && bestScore > 0.25) return best.answer;
-  return "I'm sorry, I couldn’t find an exact answer. Please try rephrasing or ask about 'applications', 'training', or 'policies'.";
+  // final fallback
+  if (!reply) reply = "Sorry — I couldn't find a close match. Try rephrasing or choose a suggestion above.";
+
+  // show typing indicator simulation
+  showTypingIndicator(true);
+  setTimeout(() => {
+    showTypingIndicator(false);
+    appendMessage('bot', reply);
+  }, 700 + Math.min(800, Math.floor(Math.random()*400)));
 }
 
+/* typing indicator (a simple bot bubble) */
+function showTypingIndicator(show) {
+  // create or remove a fake typing bubble
+  const existing = document.querySelector('.typing-bubble');
+  if (show) {
+    if (existing) return;
+    const div = document.createElement('div');
+    div.className = 'message bot typing-bubble';
+    div.innerHTML = `<p>...</p><div class="meta">${nowTime()}</div>`;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  } else {
+    if (existing) existing.remove();
+  }
+}
 
-// --- Load FAQs ---
-appendMessage('bot', '🤖 Initializing HR Chatbot... please wait.');
-sendBtn.disabled = true;
-
-fetch('faqs.json')
-  .then(res => res.json())
-  .then(data => {
-    faqsData = data.faqs.flatMap(c => c.questions);
-    isLoaded = true;
-    sendBtn.disabled = false;
-    chatBox.innerHTML = ''; // clear init message
-    appendMessage('bot', 'Hello! I am your NextGen HR Assistant. How can I help you today?');
-  })
-  .catch(() => appendMessage('bot', '⚠️ Error: Could not load FAQs. Please ensure faqs.json is available.'));
-
-// --- Event Listeners ---
-sendBtn.addEventListener('click', handleInput);
-userInput.addEventListener('keypress', e => { if (e.key === 'Enter') handleInput(); });
-clearBtn.addEventListener('click', () => {
-  localStorage.removeItem('chatHistory');
-  chatBox.innerHTML = '';
-  appendMessage('bot', 'Chat cleared. How can I help you today?');
+/* send on click / enter */
+sendBtn.addEventListener('click', () => handleSend(false,null));
+userInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    handleSend(false,null);
+  }
 });
 
-function handleInput() {
-  const msg = userInput.value.trim();
-  if (!msg || !isLoaded) return;
-  appendMessage('user', msg);
-  userInput.value = '';
-  let reply = handleGreeting(msg) || findAnswer(msg);
+/* clear */
+clearBtn.addEventListener('click', clearChat);
 
-  showTyping(true);
-  sendBtn.disabled = true;
+/* minimize / launcher behaviors */
+function setMinimized(min) {
+  if (min) {
+    chatWrapper.classList.add('minimized');
+    localStorage.setItem('ng_minimized','1');
+  } else {
+    chatWrapper.classList.remove('minimized');
+    localStorage.removeItem('ng_minimized');
+  }
+}
+launcherBtn.addEventListener('click', () => setMinimized(false));
+minimizeBtn.addEventListener('click', () => setMinimized(true));
+closeBtn.addEventListener('click', () => {
+  setMinimized(true);
+});
 
-  setTimeout(() => {
-    showTyping(false);
-    sendBtn.disabled = false;
-    appendMessage('bot', reply);
-  }, 700);
+/* theme handlers */
+themeSelect.addEventListener('change', () => {
+  const val = themeSelect.value;
+  if (val === 'custom') {
+    const saved = localStorage.getItem('ng_custom_color') || '#0078ff';
+    setPrimaryFromHex(saved);
+    customColor.value = saved;
+  } else {
+    const t = themes[val] || themes.blue;
+    document.documentElement.style.setProperty('--primary-1', t.a);
+    document.documentElement.style.setProperty('--primary-2', t.b);
+    localStorage.setItem('ng_theme', val);
+  }
+});
+
+customColor.addEventListener('input', (e) => {
+  const hex = e.target.value;
+  setPrimaryFromHex(hex);
+  themeSelect.value = 'custom';
+  localStorage.setItem('ng_custom_color', hex);
+  localStorage.setItem('ng_theme', 'custom');
+});
+
+function setPrimaryFromHex(hex) {
+  const light = lighten(hex, 36);
+  document.documentElement.style.setProperty('--primary-1', hex);
+  document.documentElement.style.setProperty('--primary-2', light);
 }
 
-// --- Load saved history on start ---
-window.addEventListener('load', loadChat);
+/* ---------------- Init ---------------- */
+async function init() {
+  // load chat history
+  loadChat();
+
+  // load faqs
+  await loadFaqs();
+
+  // initial greeting if chat empty
+  if (!chatBox.innerHTML.trim()) {
+    appendMessage('bot','Hello! I am your NextGen HR Assistant. How can I help you today?');
+  }
+
+  // load theme
+  const savedTheme = localStorage.getItem('ng_theme') || 'blue';
+  if (savedTheme === 'custom') {
+    const c = localStorage.getItem('ng_custom_color') || '#0078ff';
+    setPrimaryFromHex(c);
+    customColor.value = c;
+    themeSelect.value = 'custom';
+  } else {
+    const t = themes[savedTheme] || themes.blue;
+    document.documentElement.style.setProperty('--primary-1', t.a);
+    document.documentElement.style.setProperty('--primary-2', t.b);
+    themeSelect.value = savedTheme;
+  }
+
+  // minimization state
+  const min = !!localStorage.getItem('ng_minimized');
+  setMinimized(min);
+
+  // small save note
+  saveNote.textContent = 'Theme & chat saved locally';
+}
+
+/* run init */
+init();

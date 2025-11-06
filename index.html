@@ -1,28 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NextGen HR Assistant</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <!-- Floating launcher -->
-  <button id="chat-launcher" class="chat-launcher" aria-label="Open chat" title="Open chat">
-    <svg viewBox="0 0 24 24" class="launcher-icon" fill="currentColor" aria-hidden="true">
-      <path d="M12 2a10 10 0 100 20 10 10 0 000-20zM8 10h8v2H8v-2zm0-4h8v2H8V6z"/>
-    </svg>
-  </button>
+  <div class="chat-wrapper">
+    <div class="chat-widget">
 
-  <!-- Chat wrapper -->
-  <div id="chat-wrapper" class="chat-wrapper">
-    <div id="chat-widget" class="chat-widget" role="dialog" aria-label="HR Chatbot">
-      <header class="chat-header">
+      <div class="chat-header">
         <div class="brand">
-          <div class="bot-avatar" aria-hidden="true">
-            <!-- modern svg icon -->
-            <svg viewBox="0 0 24 24" fill="currentColor" class="bot-svg"><path d="M12 2a1 1 0 011 1v2h4a1 1 0 110 2h-1v2h1a4 4 0 014 4v5a4 4 0 01-4 4h-3.586l-1.707 1.707a1 1 0 01-1.414 0L9.586 22H6a4 4 0 01-4-4v-5a4 4 0 014-4h1V7H6a1 1 0 110-2h4V3a1 1 0 011-1zm-2 9a1 1 0 100 2h4a1 1 0 100-2h-4z"/></svg>
+          <div class="bot-avatar">
+            🤖
           </div>
           <div class="brand-text">
             <div class="title">NextGen HR Assistant</div>
@@ -31,59 +23,44 @@
         </div>
 
         <div class="header-controls">
-          <div class="theme-controls">
-            <select id="theme-select" title="Choose theme">
-              <option value="blue">Blue Gradient</option>
-              <option value="mint">Mint Gradient</option>
-              <option value="purple">Purple Gradient</option>
-              <option value="sunset">Sunset Gradient</option>
-              <option value="custom">Custom Color</option>
-            </select>
-            <input type="color" id="custom-color" title="Pick custom color" />
-          </div>
-
-          <div class="mode-controls">
-            <label class="toggle">
-              <input id="dark-toggle" type="checkbox" />
-              <span class="toggle-slider" title="Toggle dark mode" aria-hidden="true"></span>
-            </label>
-          </div>
-
+          <select id="theme-select">
+            <option>Blue Gradient</option>
+            <option selected>Purple Gradient</option>
+            <option>Mint Gradient</option>
+            <option>Sunset Gradient</option>
+          </select>
+          <input type="color" id="custom-color" />
+          <label class="toggle">
+            <input type="checkbox" id="dark-toggle" />
+            <span class="toggle-slider"></span>
+          </label>
           <div class="actions">
-            <button id="minimize-btn" class="icon-btn" title="Minimize chat" aria-label="Minimize">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 12h12v2H6z"/></svg>
-            </button>
-            <button id="close-btn" class="icon-btn" title="Close chat" aria-label="Close">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.3 5.71L12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.29 19.71 2.88 18.3 9.18 12 2.88 5.71 4.29 4.3 10.59 10.6 16.89 4.3z"/></svg>
-            </button>
+            <button id="minimize-btn" class="icon-btn" title="Minimize">−</button>
+            <button id="close-btn" class="icon-btn" title="Close">×</button>
           </div>
         </div>
-      </header>
+      </div>
 
-      <main class="chat-body">
-        <div id="chat-box" class="chat-messages" role="log" aria-live="polite"></div>
-
-        <!-- suggestions below messages but above input -->
-        <div id="suggestions" class="suggestions" aria-hidden="true"></div>
-      </main>
-
-      <footer class="chat-footer">
-        <div class="input-row">
-          <input id="user-input" type="text" placeholder="Ask your HR question... (e.g. How to apply?)" autocomplete="off" />
-          <button id="send-btn" class="primary">Send</button>
+      <div class="chat-body">
+        <div class="chat-messages"></div>
+        <div class="suggestions">
+          <div class="suggestion-list"></div>
         </div>
-        <div class="meta-row">
-          <div class="left">
+
+        <div class="chat-footer">
+          <div class="input-row">
+            <input type="text" id="user-input" placeholder="Ask your HR question... (e.g. How to apply?)" />
+            <button id="send-btn" class="primary">Send</button>
             <button id="clear-btn" class="ghost">Clear</button>
           </div>
-          <div class="right">
-            <span id="save-note" class="save-note" aria-hidden="true"></span>
-          </div>
         </div>
-      </footer>
+      </div>
+
     </div>
+
+    <button id="chat-launcher" class="chat-launcher">💬</button>
   </div>
 
-  <script src="script.js" defer></script>
+  <script src="script.js"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NextGen HR Assistant</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -18,42 +18,30 @@
             <div class="subtitle">Ask about jobs, training, interviews</div>
           </div>
         </div>
-
-        <div class="header-controls">
-          <button id="menu-btn" class="icon-btn" title="Options">⋯</button>
-          <div id="menu-dropdown" class="menu-dropdown hidden">
-            <label>Theme:
-              <select id="theme-select">
-                <option>Blue Gradient</option>
-                <option>Purple Gradient</option>
-                <option>Mint Gradient</option>
-                <option>Sunset Gradient</option>
-              </select>
-            </label>
-            <input type="color" id="custom-color" />
-            <label class="toggle">Dark Mode
-              <input type="checkbox" id="dark-toggle" />
-              <span class="toggle-slider"></span>
-            </label>
-            <button id="fullscreen-btn" class="dropdown-btn">Enter Fullscreen</button>
-            <button id="exit-fullscreen-btn" class="dropdown-btn hidden">Exit Fullscreen</button>
-          </div>
+        <button id="menu-btn" class="icon-btn">⋯</button>
+        <div id="menu-dropdown" class="menu-dropdown hidden">
+          <label>Theme:
+            <select id="theme-select">
+              <option>Blue Gradient</option>
+              <option>Purple Gradient</option>
+              <option>Mint Gradient</option>
+              <option>Sunset Gradient</option>
+            </select>
+          </label>
+          <input type="color" id="custom-color" />
+          <label class="toggle">Dark Mode
+            <input type="checkbox" id="dark-toggle" />
+          </label>
         </div>
       </div>
 
       <div class="chat-body">
         <div class="chat-messages"></div>
-
-        <div class="suggestions">
-          <div class="suggestion-list"></div>
-        </div>
-
+        <div class="suggestions"><div class="suggestion-list"></div></div>
         <div class="chat-footer">
-          <div class="input-row">
-            <input type="text" id="user-input" placeholder="Ask your HR question... (e.g. How to apply?)" />
-            <button id="send-btn" class="primary">Send</button>
-            <button id="clear-btn" class="ghost">Clear</button>
-          </div>
+          <input id="user-input" type="text" placeholder="Ask your HR question... (e.g. How to apply?)" />
+          <button id="send-btn" class="primary">Send</button>
+          <button id="clear-btn" class="ghost">Clear</button>
         </div>
       </div>
     </div>

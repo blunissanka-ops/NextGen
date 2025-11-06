@@ -4,6 +4,7 @@ const userInput = document.querySelector('#user-input');
 const sendBtn = document.querySelector('#send-btn');
 const clearBtn = document.querySelector('#clear-btn');
 const typingIndicator = document.querySelector('.typing-indicator');
+const colorPicker = document.querySelector('#color-picker');
 
 let faqsData = [];
 let isLoaded = false;
@@ -34,6 +35,30 @@ function loadChat() {
   const saved = localStorage.getItem('chatHistory');
   if (saved) chatBox.innerHTML = saved;
 }
+
+// --- Theme Color ---
+function setBotColor(color) {
+  document.documentElement.style.setProperty('--bot-color', color);
+  document.documentElement.style.setProperty('--bot-gradient', `linear-gradient(135deg, ${color}, ${lightenColor(color, 40)})`);
+  localStorage.setItem('botColor', color);
+  colorPicker.value = color;
+}
+function lightenColor(color, percent) {
+  const num = parseInt(color.replace("#",""),16),
+  amt = Math.round(2.55 * percent),
+  R = (num >> 16) + amt,
+  G = (num >> 8 & 0x00FF) + amt,
+  B = (num & 0x0000FF) + amt;
+  return "#" + (
+    0x1000000 +
+    (R<255?R<1?0:R:255)*0x10000 +
+    (G<255?G<1?0:G:255)*0x100 +
+    (B<255?B<1?0:B:255)
+  ).toString(16).slice(1);
+}
+const savedColor = localStorage.getItem('botColor') || '#0078ff';
+setBotColor(savedColor);
+colorPicker.addEventListener('input', e => setBotColor(e.target.value));
 
 // --- Fuzzy Similarity Search ---
 function similarity(a, b) {

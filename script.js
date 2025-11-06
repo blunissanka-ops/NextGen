@@ -6,13 +6,12 @@ const typingIndicator = document.querySelector('.typing-indicator');
 
 let faqsData = [];
 let isFaqsLoaded = false;
-const SCORE_THRESHOLD = 3; // Minimum score required for a confident multi-word answer
+const SCORE_THRESHOLD = 3; // Minimum score for a multi-word answer
 
 // --- Utility Functions ---
 
-// Clean text: lowercase + remove punctuation
 function cleanText(text) {
-  // Removes special characters, keeps spaces, and converts to lowercase
+  // Clean text: lowercase + remove punctuation
   return text
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, '')
@@ -35,7 +34,7 @@ function showTypingIndicator(show) {
   } else {
     typingIndicator.style.display = 'none';
   }
-  // This ensures the typing indicator is visible at the bottom
+  // Scroll to the bottom to show the indicator
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
@@ -78,14 +77,12 @@ function findAnswer(userMessage) {
   const exactMatch = faqsData.find(faq => cleanText(faq.question) === cleanedMessage);
   if (exactMatch) return exactMatch.answer;
 
-  // Step 2: Keyword-based matching using the dedicated 'keywords' array from faqs.json
+  // Step 2: Keyword-based matching
   let bestMatch = null;
   let highestScore = 0;
 
   faqsData.forEach(faq => {
     let score = 0;
-
-    // Convert the FAQ keywords to a Set for O(1) lookups
     const faqKeywords = new Set(faq.keywords);
 
     // Score based on overlap between user words and FAQ keywords
@@ -99,7 +96,7 @@ function findAnswer(userMessage) {
       highestScore = score;
       bestMatch = faq;
     } else if (score === highestScore && score > 0) {
-      // Tie-breaker: prefer the match with the shorter original question (implies higher specificity)
+      // Tie-breaker
       if (bestMatch && faq.question.length < bestMatch.question.length) {
         bestMatch = faq;
       } else if (!bestMatch) {
@@ -111,55 +108,42 @@ function findAnswer(userMessage) {
   const isSingleWordQuery = userWords.length === 1;
 
   if (bestMatch) {
-    // If it's a single word query (like 'jobs'), accept a score of 1 or more.
+    // If it's a single word query (e.g., 'jobs'), accept a score of 1 or more.
     if (isSingleWordQuery && highestScore >= 1) {
         return bestMatch.answer;
     }
-    // Otherwise, use the standard threshold for full sentences/phrases
+    // Standard threshold for multi-word phrases/sentences
     if (highestScore >= SCORE_THRESHOLD) {
         return bestMatch.answer;
     }
   }
 
 
-  // Default fallback if score is too low or no match found
+  // Default fallback
   return "I'm sorry, I couldn't find a direct answer to your question. Please try rephrasing or ask about common topics like 'jobs', 'application', 'benefits', or 'training'.";
 }
 
-// --- Conversational Logic for Greetings and Common Phrases ---
+// --- Conversational Logic ---
 
 function handleGreetings(userMessage) {
   const cleanedMessage = cleanText(userMessage);
 
-  // List of accepted greetings (including single words)
-  const greetings = [
-    'hi', 'hello', 'hey', 'good morning', 'good afternoon', 'greetings'
-  ];
-  // List of goodbyes
-  const goodbye = [
-    'bye', 'goodbye', 'see ya', 'cya', 'later'
-  ];
-  // List of acknowledgements
-  const acknowledgement = [
-    'thank you', 'thanks', 'cheers'
-  ];
+  const greetings = ['hi', 'hello', 'hey', 'good morning', 'good afternoon', 'greetings'];
+  const goodbye = ['bye', 'goodbye', 'see ya', 'cya', 'later'];
+  const acknowledgement = ['thank you', 'thanks', 'cheers'];
 
-  // Check for greetings
   if (greetings.some(g => cleanedMessage === g || cleanedMessage.includes(g))) {
     return 'Hello there! How can I assist you with HR matters today?';
   }
 
-  // Check for goodbyes
   if (goodbye.some(g => cleanedMessage === g || cleanedMessage.includes(g))) {
     return 'Goodbye! Feel free to return if you have any other HR questions.';
   }
 
-  // Check for acknowledgements
   if (acknowledgement.some(a => cleanedMessage.includes(a))) {
     return 'You are very welcome! Is there anything else I can help you with?';
   }
 
-  // Check for common non-HR questions
   if (cleanedMessage.includes('how are you')) {
       return "I'm a bot, but I'm operating perfectly! How can I help you with your HR query?";
   }
@@ -169,20 +153,16 @@ function handleGreetings(userMessage) {
 
 // --- Event Handlers ---
 
-// Handle sending message
 sendBtn.addEventListener('click', handleUserInput);
 userInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') handleUserInput();
 });
 
-// Handle clear chat
 clearBtn.addEventListener('click', () => {
   chatBox.innerHTML = '';
-  // Re-add the welcome message after clearing
   appendMessage('bot', 'Hello! I am your NextGen HR Assistant. How can I help you today?');
 });
 
-// Send user message
 function handleUserInput() {
   const userMessage = userInput.value.trim();
   if (!userMessage || !isFaqsLoaded) return; 
@@ -194,7 +174,6 @@ function handleUserInput() {
   // 2. Determine reply (Check for greetings first)
   let reply = handleGreetings(userMessage);
 
-  // If not a greeting, proceed to the main FAQ search
   if (reply === null) {
     reply = findAnswer(userMessage);
   }

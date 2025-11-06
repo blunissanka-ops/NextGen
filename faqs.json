@@ -1,32 +1,32 @@
 [
   {
     "question": "How can I apply for a job at NextGen Systems?",
-    "answer": "You can apply for a job by visiting the NextGen Systems Careers page and submitting your application online.",
+    "answer": "You can apply by visiting the NextGen Systems Careers page and submitting your application online.",
     "keywords": ["apply","application","job","career","recruitment"]
   },
   {
     "question": "Can I apply for more than one position?",
-    "answer": "Yes, you can apply for multiple positions as long as you meet the qualifications for each.",
+    "answer": "Yes, you can apply for multiple positions if you meet the requirements for each.",
     "keywords": ["multiple","positions","apply","jobs"]
   },
   {
     "question": "How can I check my application status?",
-    "answer": "You can check your application status by logging into your candidate profile under 'My Applications'.",
+    "answer": "Log into your candidate profile on our careers portal and open 'My Applications' to check status.",
     "keywords": ["status","application","check","progress"]
   },
   {
     "question": "Does the company offer training programs?",
-    "answer": "Yes, NextGen Systems offers onboarding and skill-enhancement training programs for all employees.",
-    "keywords": ["training","programs","courses","learning"]
+    "answer": "Yes, NextGen Systems provides onboarding and continuous learning programs for all staff.",
+    "keywords": ["training","learning","courses","development"]
   },
   {
     "question": "What qualifications are required to work at NextGen Systems?",
-    "answer": "Each job posting includes a list of required qualifications. Typically, a relevant degree or equivalent experience is preferred.",
+    "answer": "Each job posting lists required qualifications. Typically, a relevant degree or experience is preferred.",
     "keywords": ["qualifications","degree","skills","requirements"]
   },
   {
     "question": "How are interviews conducted?",
-    "answer": "Interviews are typically conducted online via video conferencing platforms. You will receive instructions after shortlisting.",
-    "keywords": ["interview","process","conducted","online"]
+    "answer": "Interviews are usually held online via video call. Shortlisted applicants receive instructions by email.",
+    "keywords": ["interview","process","meeting","online"]
   }
 ]

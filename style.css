@@ -1,6 +1,35 @@
-/* style.css (FIXED for Overlap and User Experience + NEW MENU) */
+/* style.css (Theme, Menu, and Overlap Fixes) */
 
-/* Base Styles */
+/* ---------------------------------
+   CSS VARIABLES FOR THEMES
+--------------------------------- */
+.chat-container {
+    /* Default Theme */
+    --primary-color: #007bff;
+    --primary-gradient-start: #0078ff;
+    --primary-gradient-end: #00b4ff;
+    --primary-hover: #0056b3;
+    --user-bubble-bg: var(--primary-color);
+}
+.chat-container.theme-sunset {
+    --primary-color: #ff7e5f; /* Base Sunset Orange */
+    --primary-gradient-start: #ff7e5f;
+    --primary-gradient-end: #feb47b;
+    --primary-hover: #e06048;
+    --user-bubble-bg: var(--primary-color);
+}
+.chat-container.theme-emerald {
+    --primary-color: #13aa52; /* Base Emerald Green */
+    --primary-gradient-start: #13aa52;
+    --primary-gradient-end: #47cf73;
+    --primary-hover: #0e8c42;
+    --user-bubble-bg: var(--primary-color);
+}
+
+
+/* ---------------------------------
+   BASE STYLES
+--------------------------------- */
 body {
   background: #eaf3ff; 
   font-family: "Poppins", Arial, sans-serif; 
@@ -24,7 +53,7 @@ body {
   transition: all 0.3s ease; /* For smooth fullscreen transition */
 }
 
-/* --- NEW: Fullscreen Style --- */
+/* --- Fullscreen Style --- */
 .chat-container.fullscreen {
     position: fixed;
     top: 0;
@@ -36,38 +65,26 @@ body {
     max-width: none;
     z-index: 9999;
 }
-/* --- END NEW: Fullscreen Style --- */
 
 
-/* Chat Header (Adjusted to accommodate menu) */
+/* ---------------------------------
+   CHAT HEADER & MENU
+--------------------------------- */
 .chat-header {
-  /* Default Theme */
-  background: linear-gradient(135deg, #0078ff, #00b4ff); 
+  /* Uses CSS Variables for dynamic gradient */
+  background: linear-gradient(135deg, var(--primary-gradient-start), var(--primary-gradient-end)); 
   color: white;
-  padding: 15px 15px 15px 25px; 
+  padding: 15px 15px 15px 20px; 
   text-align: center;
   font-size: 1.2em;
   font-weight: 600;
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Aligns content and menu to edges */
-  gap: 10px;
-  position: relative; /* For dropdown positioning */
+  justify-content: space-between; 
+  position: relative; 
+  transition: background 0.3s;
 }
 
-/* --- NEW: Theme Classes --- */
-.chat-header.theme-default {
-    background: linear-gradient(135deg, #0078ff, #00b4ff); /* Original Blue Wave */
-}
-.chat-header.theme-sunset {
-    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Warm Orange/Pink */
-}
-.chat-header.theme-emerald {
-    background: linear-gradient(135deg, #13aa52, #47cf73); /* Green/Emerald */
-}
-/* --- END NEW: Theme Classes --- */
-
-/* Bot Avatar Styling */
 .bot-avatar {
   width: 40px;
   height: 40px;
@@ -77,15 +94,20 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px;
+  font-size: 20px;
   line-height: 1;
 }
-
 .bot-avatar::before {
-  content: '🤖'; /* The Robot Emoji */
+  content: '🤖'; 
 }
 
-/* --- NEW: Kebab Menu & Dropdown Styles --- */
+.header-title {
+    flex-grow: 1; /* Pushes the menu to the right */
+    text-align: center;
+    margin-left: -30px; /* Offset the space taken by the menu/avatar for centering */
+}
+
+/* Kebab Menu & Dropdown Styles */
 .kebab-menu {
   position: relative;
 }
@@ -94,15 +116,12 @@ body {
   background: none;
   border: none;
   color: white;
-  font-size: 1.5em;
+  font-size: 1.1em;
   line-height: 1;
   padding: 0 5px;
   cursor: pointer;
   transition: opacity 0.2s;
-  font-weight: 800;
-  transform: translateY(-2px);
 }
-
 #menu-btn:hover {
   opacity: 0.8;
 }
@@ -111,7 +130,7 @@ body {
   position: absolute;
   top: 100%; 
   right: 0;
-  width: 200px;
+  width: 220px; /* Slightly wider for better UX */
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -126,16 +145,17 @@ body {
 }
 
 .dropdown-section-title {
-    font-size: 0.8em;
-    font-weight: 600;
-    color: #555;
-    margin: 5px 0 5px 5px;
-    padding: 0 5px;
+    font-size: 0.85em;
+    font-weight: 700;
+    color: #444;
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 10px;
 }
 
 .menu-item {
     width: 100%;
-    padding: 8px 10px;
+    padding: 10px;
     margin-bottom: 5px;
     text-align: left;
     border: none;
@@ -146,6 +166,10 @@ body {
     border-radius: 4px;
     transition: background 0.2s;
 }
+.menu-item i {
+    margin-right: 8px;
+    color: var(--primary-color);
+}
 
 .menu-item:hover {
     background-color: #f0f0f0;
@@ -154,11 +178,11 @@ body {
 .theme-options {
     display: flex;
     justify-content: space-between;
-    padding: 5px;
+    padding: 0 0 10px 0;
 }
 
 .theme-option {
-    padding: 5px 8px;
+    padding: 6px 8px;
     font-size: 0.8em;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -168,20 +192,28 @@ body {
     flex-grow: 1;
     margin: 0 3px;
     text-align: center;
+    box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0); /* Used for active state */
 }
 
-.theme-option[data-theme="default"] { background: #007bff; border-color: #007bff; }
-.theme-option[data-theme="sunset"] { background: #ff7e5f; border-color: #ff7e5f; }
-.theme-option[data-theme="emerald"] { background: #13aa52; border-color: #13aa52; }
+/* Theme Option Specific Styles (for color preview) */
+.theme-option.theme-default { background: linear-gradient(135deg, #0078ff, #00b4ff); border-color: #007bff; }
+.theme-option.theme-sunset { background: linear-gradient(135deg, #ff7e5f, #feb47b); border-color: #ff7e5f; }
+.theme-option.theme-emerald { background: linear-gradient(135deg, #13aa52, #47cf73); border-color: #13aa52; }
+
+/* Active Theme State */
+.theme-option.active-theme {
+    box-shadow: inset 0 0 0 3px white, 0 0 0 2px var(--primary-color);
+    transform: scale(1.05);
+}
 
 .theme-option:hover {
-    opacity: 0.8;
+    opacity: 0.9;
 }
 
-/* --- END NEW: Kebab Menu & Dropdown Styles --- */
 
-
-/* Chat Box: Added padding-bottom to prevent suggestions from hiding content */
+/* ---------------------------------
+   CHAT BOX & MESSAGES
+--------------------------------- */
 .chat-box {
   flex: 1;
   padding: 15px;
@@ -192,7 +224,6 @@ body {
   gap: 10px;
 }
 
-/* Chat Messages */
 .message {
   margin-bottom: 10px;
   max-width: 80%;
@@ -203,13 +234,10 @@ body {
   align-items: center;
 }
 
-.message p {
-  margin: 0;
-}
-
+/* Dynamic User Message Color */
 .message.user {
   align-self: flex-end;
-  background-color: #007bff; 
+  background-color: var(--user-bubble-bg); /* Uses CSS variable */
   color: #fff;
 }
 
@@ -219,7 +247,10 @@ body {
   color: #333;
 }
 
-/* Input Container: Holds all elements at the bottom */
+
+/* ---------------------------------
+   INPUT & SUGGESTIONS
+--------------------------------- */
 .input-container {
   display: flex; 
   padding: 10px;
@@ -228,13 +259,11 @@ body {
   gap: 8px; 
 }
 
-/* Autocomplete Container: Takes full width and provides relative context */
 .autocomplete-container {
   flex: 1; 
   position: relative; 
 }
 
-/* User Input Field */
 .input-container input {
   width: 100%; 
   border: 1px solid #ccc; 
@@ -247,10 +276,9 @@ body {
   z-index: 110; 
 }
 
-/* Suggestions List: Positioned directly above the input */
 .suggestions-list {
   position: absolute;
-  bottom: 50px; /* Positions it correctly above the input field */
+  bottom: 50px; 
   left: 0;
   right: 0;
   max-height: 180px; 
@@ -280,10 +308,13 @@ body {
 
 .suggestion-item:hover {
   background-color: #e6f0ff; 
-  color: #007bff;
+  color: var(--primary-color);
 }
 
-/* Button Styles */
+
+/* ---------------------------------
+   BUTTONS
+--------------------------------- */
 .input-container button {
   padding: 10px 18px; 
   border-radius: 20px; 
@@ -295,11 +326,11 @@ body {
 }
 
 #send-btn {
-  background-color: #007bff;
+  background-color: var(--primary-color); /* Uses CSS variable */
 }
 
 #send-btn:hover:not(:disabled) {
-  background-color: #0056b3;
+  background-color: var(--primary-hover);
 }
 
 #send-btn:disabled {
@@ -316,7 +347,9 @@ body {
 }
 
 
-/* Typing Indicator Styles */
+/* ---------------------------------
+   TYPING INDICATOR
+--------------------------------- */
 .typing-indicator {
   align-self: flex-start; 
   background-color: #f1f1f1;
@@ -342,18 +375,10 @@ body {
   opacity: 0;
   animation: typing-dot 1s infinite;
 }
-
-.typing-animation span:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.typing-animation span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-animation span:nth-child(3) {
-  animation-delay: 0.4s;
-}
+/* ... (Typing indicator animation delays) ... */
+.typing-animation span:nth-child(1) { animation-delay: 0s; }
+.typing-animation span:nth-child(2) { animation-delay: 0.2s; }
+.typing-animation span:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes typing-dot {
   0%, 80%, 100% {

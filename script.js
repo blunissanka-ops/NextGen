@@ -42,19 +42,26 @@ function similarity(a,b){
 }
 
 function findAnswer(msg) {
+function findAnswer(msg) {
   const text = cleanText(msg);
+
+  // Greeting detection
   const greetings = ["hi","hello","hey","good morning","good evening","good afternoon"];
   if (greetings.some(g => text.includes(g)))
     return "👋 Hello there! How can I assist you today? You can ask about jobs, application status, or training.";
 
+  // Smart matching
   let best = null, bestScore = 0;
   faqsData.forEach(f => {
-    const score = similarity(text, f.question + " " + f.keywords.join(" "));
+    const combined = (f.question + " " + (f.keywords || []).join(" ")).toLowerCase();
+    const score = similarity(text, combined);
     if (score > bestScore) { best = f; bestScore = score; }
   });
 
-  // If no good match, look for partials
-  if (bestScore > 0.1) return best.answer;
+  // If a good match found
+  if (best && bestScore > 0.1) return best.answer;
+
+  // Partial word match (extra layer)
   const partial = faqsData.find(f => {
     const qWords = f.question.toLowerCase().split(" ");
     return qWords.some(w => text.includes(w));
@@ -62,8 +69,9 @@ function findAnswer(msg) {
   if (partial) return partial.answer;
 
   // Default fallback
-  return "🤔 I couldn’t find an exact match. Try asking about applying, training, or interviews.";
+  return "🤔 I’m not sure about that one. Try asking about jobs, qualifications, or training programs.";
 }
+
 
 }
 

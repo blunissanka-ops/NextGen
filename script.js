@@ -77,19 +77,40 @@ function handleGreeting(msg) {
   if (t.includes('how are you')) return "I'm fully operational! How can I support your HR query?";
   return null;
 }
-
-// --- Find Best Answer ---
 function findAnswer(msg) {
   const t = cleanText(msg);
+  const words = t.split(/\s+/);
+  const isShortQuery = words.length <= 2;
+
+  // Quick routing by keywords
+  const lower = t.toLowerCase();
+  if (isShortQuery) {
+    if (/(job|jobs|apply|career)/.test(lower)) {
+      const jobFaq = faqsData.find(f => f.question.toLowerCase().includes("apply for a job"));
+      if (jobFaq) return jobFaq.answer;
+    }
+    if (/(qualification|degree|requirements|education)/.test(lower)) {
+      const reqFaq = faqsData.find(f => f.question.toLowerCase().includes("qualifications"));
+      if (reqFaq) return reqFaq.answer;
+    }
+    if (/(interview|call|feedback|status)/.test(lower)) {
+      const intFaq = faqsData.find(f => f.question.toLowerCase().includes("interview"));
+      if (intFaq) return intFaq.answer;
+    }
+  }
+
+  // Fuzzy match for normal queries
   let best = null, bestScore = 0;
   faqsData.forEach(faq => {
     const combined = faq.question + ' ' + faq.keywords.join(' ');
     const score = similarity(t, combined);
     if (score > bestScore) { bestScore = score; best = faq; }
   });
+
   if (best && bestScore > 0.25) return best.answer;
   return "I'm sorry, I couldn’t find an exact answer. Please try rephrasing or ask about 'applications', 'training', or 'policies'.";
 }
+
 
 // --- Load FAQs ---
 appendMessage('bot', '🤖 Initializing HR Chatbot... please wait.');

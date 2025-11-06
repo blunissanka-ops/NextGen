@@ -2,19 +2,19 @@ const chatBox = document.querySelector('.chat-box');
 const userInput = document.querySelector('#user-input');
 const sendBtn = document.querySelector('#send-btn');
 const clearBtn = document.querySelector('#clear-btn');
-const typingIndicator = document.querySelector('.typing-indicator');
+// The typing indicator element now has an ID in the HTML:
+const typingIndicator = document.querySelector('#typing-indicator');
 
 // Autocomplete elements
 const autocompleteContainer = document.querySelector('.autocomplete-container');
 const suggestionsList = document.querySelector('#suggestions-list');
 
-// NEW elements for menu/themes
+// Menu elements
 const menuBtn = document.querySelector('#menu-btn');
 const optionsDropdown = document.querySelector('#options-dropdown');
 const themeOptions = document.querySelectorAll('.theme-option');
 const toggleSizeBtn = document.querySelector('#toggle-size-btn');
-const chatContainer = document.querySelector('.chat-container'); // Used for theme class
-const chatHeader = document.querySelector('.chat-header'); // Used for theme class
+const chatContainer = document.querySelector('.chat-container');
 
 let faqsData = [];
 let isFaqsLoaded = false;
@@ -29,26 +29,25 @@ function cleanText(text) {
     .trim();
 }
 
-function appendMessage(sender, text, isTyping = false) {
-  if (isTyping) return;
-
+function appendMessage(sender, text) {
   const msg = document.createElement('div');
   msg.classList.add('message', sender);
   msg.innerHTML = `<p>${text}</p>`;
-  chatBox.appendChild(msg);
+  
+  // Insert the new message BEFORE the typing indicator
+  chatBox.insertBefore(msg, typingIndicator); 
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function showTypingIndicator(show) {
-  if (show) {
-    typingIndicator.style.display = 'flex';
-  } else {
-    typingIndicator.style.display = 'none';
+  if (typingIndicator) {
+    typingIndicator.style.display = show ? 'flex' : 'none';
   }
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// --- Chatbot Core Logic (Load FAQs, findAnswer, handleGreetings - unchanged) ---
+
+// --- Chatbot Core Logic ---
 
 // Load FAQs asynchronously and handle UI state
 appendMessage('bot', '🤖 Initializing HR Chatbot. Please wait, loading knowledge base...');
@@ -61,9 +60,10 @@ fetch('faqs.json')
     isFaqsLoaded = true;
     sendBtn.disabled = false;
 
-    const loadingMessage = chatBox.querySelector('.bot p');
-    if (loadingMessage && loadingMessage.textContent.includes('Initializing HR Chatbot')) {
-      loadingMessage.closest('.message').remove();
+    // Remove initial loading message
+    const initialMessage = chatBox.querySelector('.bot p');
+    if (initialMessage && initialMessage.textContent.includes('Initializing HR Chatbot')) {
+      initialMessage.closest('.message').remove();
     }
 
     // Set initial theme and welcome message
@@ -76,9 +76,8 @@ fetch('faqs.json')
   });
 
 function findAnswer(userMessage) {
-  if (!isFaqsLoaded) {
-    return 'I am still loading the knowledge base. Please wait a moment before sending a message.';
-  }
+  // ... (Your existing findAnswer logic) ...
+  if (!isFaqsLoaded) return 'I am still loading the knowledge base.';
 
   const cleanedMessage = cleanText(userMessage);
   const userWords = cleanedMessage.split(/\s+/).filter(word => word.length > 2);
@@ -113,13 +112,8 @@ function findAnswer(userMessage) {
 
   const isSingleWordQuery = userWords.length === 1;
 
-  if (bestMatch) {
-    if (isSingleWordQuery && highestScore >= 1) {
-        return bestMatch.answer;
-    }
-    if (highestScore >= SCORE_THRESHOLD) {
-        return bestMatch.answer;
-    }
+  if (bestMatch && (isSingleWordQuery && highestScore >= 1 || highestScore >= SCORE_THRESHOLD)) {
+    return bestMatch.answer;
   }
 
   return "I'm sorry, I couldn't find a direct answer to your question. Please try rephrasing or ask about common topics like 'jobs', 'application', 'benefits', or 'training'.";
@@ -152,7 +146,7 @@ function handleGreetings(userMessage) {
 }
 
 
-// --- Autocomplete Functions (unchanged) ---
+// --- Autocomplete Functions (Robust) ---
 
 function filterSuggestions(query) {
   if (!query || !isFaqsLoaded) return [];
@@ -209,9 +203,12 @@ function handleInputForSuggestions() {
   renderSuggestions(suggestions);
 }
 
-// --- NEW: Menu & Theme Logic ---
+
+// --- Menu & Theme Logic (Robust) ---
 
 function applyTheme(newTheme) {
+    if (!chatContainer) return;
+
     // 1. Remove all existing theme classes
     chatContainer.classList.remove('theme-default', 'theme-sunset', 'theme-emerald');
     // 2. Add the new theme class to the container
@@ -227,6 +224,8 @@ function applyTheme(newTheme) {
 }
 
 function toggleFullscreen() {
+    if (!chatContainer || !toggleSizeBtn) return;
+    
     chatContainer.classList.toggle('fullscreen');
     const isFullscreen = chatContainer.classList.contains('fullscreen');
     
@@ -243,20 +242,23 @@ function toggleFullscreen() {
 }
 
 
-// 1. Menu Toggle
-menuBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); 
-    optionsDropdown.classList.toggle('open');
-});
+// --- Event Listeners ---
 
-// Close dropdown when clicking outside
-document.addEventListener('click', (e) => {
-    if (optionsDropdown.classList.contains('open') && !menuBtn.contains(e.target) && !optionsDropdown.contains(e.target)) {
-        optionsDropdown.classList.remove('open');
-    }
-});
+// Only attach menu listeners if the elements exist
+if (menuBtn && optionsDropdown) {
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        optionsDropdown.classList.toggle('open');
+    });
 
-// 2. Theme Change
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (optionsDropdown.classList.contains('open') && !menuBtn.contains(e.target) && !optionsDropdown.contains(e.target)) {
+            optionsDropdown.classList.remove('open');
+        }
+    });
+}
+
 themeOptions.forEach(button => {
     button.addEventListener('click', (e) => {
         const newTheme = e.target.dataset.theme;
@@ -265,14 +267,13 @@ themeOptions.forEach(button => {
     });
 });
 
-// 3. Fullscreen/Minimize Toggle
-toggleSizeBtn.addEventListener('click', () => {
-    toggleFullscreen();
-    optionsDropdown.classList.remove('open'); 
-});
+if (toggleSizeBtn) {
+    toggleSizeBtn.addEventListener('click', () => {
+        toggleFullscreen();
+        optionsDropdown.classList.remove('open'); 
+    });
+}
 
-
-// --- Event Handlers (Final) ---
 
 sendBtn.addEventListener('click', handleUserInput);
 userInput.addEventListener('keypress', (e) => {
@@ -289,15 +290,14 @@ document.addEventListener('click', (e) => {
 
 
 clearBtn.addEventListener('click', () => {
-  chatBox.innerHTML = '';
-  chatBox.innerHTML = `
-    <div class="message bot typing-indicator" style="display: none;">
-      <div class="typing-animation">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    </div>`;
+  // Remove all chat messages, but keep the typing indicator
+  Array.from(chatBox.children).forEach(child => {
+      if (child.id !== 'typing-indicator') {
+          child.remove();
+      }
+  });
+  
+  // Send the welcome message again
   appendMessage('bot', 'Hello! I am your NextGen HR Assistant. How can I help you today?');
   suggestionsList.style.display = 'none'; 
 });

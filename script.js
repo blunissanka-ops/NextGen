@@ -4,9 +4,13 @@ const sendBtn = document.querySelector('#send-btn');
 const clearBtn = document.querySelector('#clear-btn');
 const typingIndicator = document.querySelector('.typing-indicator');
 
+// NEW: Autocomplete elements
+const autocompleteContainer = document.querySelector('.autocomplete-container');
+const suggestionsList = document.querySelector('#suggestions-list');
+
 let faqsData = [];
 let isFaqsLoaded = false;
-const SCORE_THRESHOLD = 3; // Minimum score for a confident multi-word answer
+const SCORE_THRESHOLD = 3; 
 
 // --- Utility Functions ---
 
@@ -34,11 +38,11 @@ function showTypingIndicator(show) {
   } else {
     typingIndicator.style.display = 'none';
   }
-  // This ensures the typing indicator is visible at the bottom
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// --- Chatbot Core Logic ---
+// --- Chatbot Core Logic (Unchanged) ---
+// ... (Your existing logic for loading faqs.json and findAnswer) ...
 
 // Load FAQs asynchronously and handle UI state
 appendMessage('bot', '🤖 Initializing HR Chatbot. Please wait, loading knowledge base...');
@@ -123,7 +127,7 @@ function findAnswer(userMessage) {
   return "I'm sorry, I couldn't find a direct answer to your question. Please try rephrasing or ask about common topics like 'jobs', 'application', 'benefits', or 'training'.";
 }
 
-// --- Conversational Logic (Handles simple greetings/acknowledgements) ---
+// --- Conversational Logic (Unchanged) ---
 
 function handleGreetings(userMessage) {
   const cleanedMessage = cleanText(userMessage);
@@ -151,12 +155,84 @@ function handleGreetings(userMessage) {
   return null;
 }
 
-// --- Event Handlers ---
+// --- NEW: Autocomplete Functions ---
+
+function filterSuggestions(query) {
+  if (!query || !isFaqsLoaded) return [];
+
+  const cleanedQuery = cleanText(query);
+
+  const matchedQuestions = faqsData.filter(faq => {
+    // Check if the cleaned query is included in the cleaned question text
+    return cleanText(faq.question).includes(cleanedQuery);
+  });
+
+  // Sort by how early the query appears in the question (simple relevance)
+  matchedQuestions.sort((a, b) => {
+    const aIndex = cleanText(a.question).indexOf(cleanedQuery);
+    const bIndex = cleanText(b.question).indexOf(cleanedQuery);
+    return aIndex - bIndex;
+  });
+
+  // Limit to 5 suggestions
+  return matchedQuestions.slice(0, 5).map(faq => faq.question);
+}
+
+function renderSuggestions(suggestions) {
+  suggestionsList.innerHTML = '';
+
+  if (suggestions.length === 0) {
+    suggestionsList.style.display = 'none';
+    return;
+  }
+
+  suggestions.forEach(question => {
+    const item = document.createElement('div');
+    item.classList.add('suggestion-item');
+    item.textContent = question;
+    
+    // Handle click to select the suggestion and trigger search
+    item.addEventListener('click', () => {
+      userInput.value = question;
+      suggestionsList.style.display = 'none';
+      userInput.focus();
+      handleUserInput(); // Automatically send the selected question
+    });
+
+    suggestionsList.appendChild(item);
+  });
+
+  suggestionsList.style.display = 'block';
+}
+
+function handleInputForSuggestions() {
+  const query = userInput.value.trim();
+  if (query.length < 2) { // Start suggesting after 2 characters
+    suggestionsList.style.display = 'none';
+    return;
+  }
+
+  const suggestions = filterSuggestions(query);
+  renderSuggestions(suggestions);
+}
+
+// --- Event Handlers (Updated) ---
 
 sendBtn.addEventListener('click', handleUserInput);
 userInput.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') handleUserInput();
 });
+
+// NEW: Add the input listener for suggestions
+userInput.addEventListener('input', handleInputForSuggestions);
+
+// NEW: Add listener to hide suggestions when clicking outside
+document.addEventListener('click', (e) => {
+    if (!autocompleteContainer.contains(e.target) && suggestionsList.style.display === 'block') {
+        suggestionsList.style.display = 'none';
+    }
+});
+
 
 clearBtn.addEventListener('click', () => {
   // Clear the chat box
@@ -172,6 +248,7 @@ clearBtn.addEventListener('click', () => {
     </div>`;
   // Re-append the initial message
   appendMessage('bot', 'Hello! I am your NextGen HR Assistant. How can I help you today?');
+  suggestionsList.style.display = 'none'; // Ensure suggestions are hidden on clear
 });
 
 function handleUserInput() {
@@ -181,6 +258,7 @@ function handleUserInput() {
   // 1. Display user message
   appendMessage('user', userMessage);
   userInput.value = '';
+  suggestionsList.style.display = 'none'; // Hide suggestions on send
 
   // 2. Determine reply (Check for greetings first)
   let reply = handleGreetings(userMessage);

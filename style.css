@@ -191,3 +191,10 @@ body {
 .live-suggestion:hover {
   background: rgba(0,0,0,0.05);
 }
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+.chat-messages::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+}

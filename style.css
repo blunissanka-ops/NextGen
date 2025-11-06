@@ -1,4 +1,4 @@
-/* style.css (Theme, Menu, and Overlap Fixes) */
+/* style.css (Final, Confirmed) */
 
 /* ---------------------------------
    CSS VARIABLES FOR THEMES
@@ -104,7 +104,7 @@ body {
 .header-title {
     flex-grow: 1; /* Pushes the menu to the right */
     text-align: center;
-    margin-left: -30px; /* Offset the space taken by the menu/avatar for centering */
+    margin-left: -30px; 
 }
 
 /* Kebab Menu & Dropdown Styles */
@@ -130,7 +130,7 @@ body {
   position: absolute;
   top: 100%; 
   right: 0;
-  width: 220px; /* Slightly wider for better UX */
+  width: 220px; 
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
@@ -192,7 +192,7 @@ body {
     flex-grow: 1;
     margin: 0 3px;
     text-align: center;
-    box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0); /* Used for active state */
+    box-shadow: inset 0 0 0 10px rgba(255, 255, 255, 0); 
 }
 
 /* Theme Option Specific Styles (for color preview) */
@@ -237,7 +237,7 @@ body {
 /* Dynamic User Message Color */
 .message.user {
   align-self: flex-end;
-  background-color: var(--user-bubble-bg); /* Uses CSS variable */
+  background-color: var(--user-bubble-bg); 
   color: #fff;
 }
 
@@ -249,7 +249,7 @@ body {
 
 
 /* ---------------------------------
-   INPUT & SUGGESTIONS
+   INPUT & SUGGESTIONS (Fixed Overlap)
 --------------------------------- */
 .input-container {
   display: flex; 
@@ -278,7 +278,7 @@ body {
 
 .suggestions-list {
   position: absolute;
-  bottom: 50px; 
+  bottom: 50px; /* Ensures it sits neatly above the input */
   left: 0;
   right: 0;
   max-height: 180px; 
@@ -326,7 +326,7 @@ body {
 }
 
 #send-btn {
-  background-color: var(--primary-color); /* Uses CSS variable */
+  background-color: var(--primary-color); 
 }
 
 #send-btn:hover:not(:disabled) {
@@ -375,7 +375,6 @@ body {
   opacity: 0;
   animation: typing-dot 1s infinite;
 }
-/* ... (Typing indicator animation delays) ... */
 .typing-animation span:nth-child(1) { animation-delay: 0s; }
 .typing-animation span:nth-child(2) { animation-delay: 0.2s; }
 .typing-animation span:nth-child(3) { animation-delay: 0.4s; }

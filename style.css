@@ -2,21 +2,26 @@
 
 /* ... (Your existing styles for .chat-header, etc.) ... */
 
-/* Bot Avatar Styling (FIXED for Emoji/CSS) */
+/* Bot Avatar Styling (FIXED: Uses Emoji/CSS) */
 .bot-avatar {
   width: 40px;
   height: 40px;
-  border-radius: 50%; /* Makes the container circular */
-  background: white; /* Provides a white circle for the emoji to sit on */
+  border-radius: 50%; /* Creates the circular background */
+  background: white; 
   padding: 4px;
   
-  /* NEW: Center the emoji */
+  /* NEW: Center the content */
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 24px; /* Adjust emoji size */
+  font-size: 24px; /* Adjust size of the emoji */
+  line-height: 1; /* Ensure vertical centering */
 }
 
+/* NEW: Use a pseudo-element to insert the emoji */
+.bot-avatar::before {
+  content: '🤖'; /* The Robot Emoji */
+}
 /* NEW: Use a pseudo-element to insert the emoji/icon */
 .bot-avatar::before {
   content: '🤖'; /* This is the bot emoji */
